@@ -44,7 +44,6 @@ PA2D/
 ├── pa2d.lib        # 发布版库文件
 ├── pa2dd.lib       # 调试版库文件
 ├── examples/           # 示例代码
-├── docs/              # 文档
 └── README.md
 ```
 
