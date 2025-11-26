@@ -37,7 +37,36 @@ PA2D 是一个专为现代 C++ 设计的轻量级 2D 图形编程库，旨在为
 - 线程安全的窗口消息处理
 - 自定义菜单和光标
 
-## 🚀 快速开始
+## 📁 项目结构
+```txt
+PA2D/
+├── pa2d.h          # 主头文件
+├── pa2d.lib        # 发布版库文件
+├── pa2dd.lib       # 调试版库文件
+├── examples/           # 示例代码
+├── docs/              # 文档
+└── README.md
+```
+
+## 配置项目
+
+下载 PA2D 库文件
+
+将 include/ 目录添加到头文件搜索路径
+
+链接相应的库文件 (pa2d.lib 或 pa2dd.lib)
+
+在代码中包含头文件：#include "pa2d.h"
+
+## 环境要求
+
+Windows 7 或更高版本
+
+Visual Studio 2019 或更高版本
+
+C++14 或更高标准
+
+## 🎮 使用示例
 
 ### 基本绘制示例
 
@@ -89,34 +118,6 @@ int main() {
     return 0;
 }
 ```
-## 📁 项目结构
-```txt
-PA2D/
-├── pa2d.h          # 主头文件
-├── pa2d.lib        # 发布版库文件
-├── pa2dd.lib       # 调试版库文件
-├── examples/           # 示例代码
-├── docs/              # 文档
-└── README.md
-```
-## 🔧 安装与使用
 
-### 环境要求
-
-Windows 7 或更高版本
-
-Visual Studio 2019 或更高版本
-
-C++14 或更高标准
-
-### 集成步骤
-
-下载 PA2D 库文件
-
-将 include/ 目录添加到头文件搜索路径
-
-链接相应的库文件 (pa2d.lib 或 pa2dd.lib)
-
-在代码中包含头文件：#include "pa2d.h"
 
 
