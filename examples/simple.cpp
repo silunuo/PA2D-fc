@@ -8,6 +8,7 @@ int main() {
     
     while (window.isOpen()) {
         window.render(canvas);
+        Sleep(16);
     }
     return 0;
 }
