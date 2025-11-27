@@ -9,7 +9,6 @@
 #pragma comment(lib, "gdiplus.lib")
 
 namespace pa2d {
-    /* pa2d_math.h -- 几何库*/
     /* 宏定义 -- 用于简化多态代码*/
     namespace {
 #define DECLARE_SHAPE_VIRTUAL_FUNCTIONS(ClassName, PureVirtual) \
@@ -950,4 +949,5 @@ namespace pa2d {
         HDC persistentDC_ = nullptr;
     };
 }
+
 
