@@ -90,19 +90,24 @@ namespace pa2d {
         Canvas& crop(int x, int y, int width, int height);
         Canvas& resize(int newWidth, int newHeight, uint32_t clearColor = 0xFFFFFFFF);
 
-        // ==================== 基础图形绘制 ====================
+        // ==================== 基础图形 ====================
+        // 线和多边形
+        Canvas& line(float x0, float y0, float x1, float y1, const Color& color, float lineWidth = 1.0f);
+        Canvas& polyline(const std::vector<Point>& points, const Color& color, float lineWidth = 1.0f, bool closed = false);
+        Canvas& polygon(const std::vector<Point>& vertices, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        // 三角形
+        Canvas& triangle(float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        // 矩形相关
         Canvas& rect(float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         Canvas& rect(float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         Canvas& roundRect(float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
         Canvas& roundRect(float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
+        // 圆形和椭圆
         Canvas& circle(float centerX, float centerY, float radius, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         Canvas& ellipse(float cx, float cy, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         Canvas& ellipse(float cx, float cy, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-        Canvas& triangle(float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        // 扇形
         Canvas& sector(float cx, float cy, float radius, float startAngleDeg, float endAngleDeg, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f, bool drawArc = true, bool drawRadialEdges = true);
-        Canvas& line(float x0, float y0, float x1, float y1, const Color& color, float lineWidth = 1.0f);
-        Canvas& polyline(const std::vector<Point>& points, const Color& color, float lineWidth = 1.0f, bool closed = false);
-        Canvas& polygon(const std::vector<Point>& vertices, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
 
         // ==================== 面向对象图形绘制 ====================
         Canvas& draw(const Points&, const Style&);
@@ -174,49 +179,31 @@ namespace pa2d {
 
     class Window {
     public:
+    public:
+        // ==================== 常用功能 ====================
         // 构造/析构
         Window(int width, int height, const char* title);
         ~Window();
 
-        // 禁止拷贝
-        Window(const Window&) = delete;
-        Window& operator=(const Window&) = delete;
-
-        // 公开成员变量（保持简单访问）
+        // 公开成员变量
         HWND hwnd_ = nullptr;
         int width_ = 0;
         int height_ = 0;
         bool shouldClose_ = false;
 
-        // 链式回调设置
-        Window& onKey(KeyCallback cb);
-        Window& onMouse(MouseCallback cb);
-        Window& onResize(ResizeCallback cb);
-        Window& onChar(CharCallback cb);
-        Window& onFocus(FocusCallback cb);
-        Window& onClose(CloseCallback cb);
-        Window& onMenu(MenuCallback cb);
-        Window& onFileDrop(FileListCallback cb);
-        Window& onClipboardFiles(FileListCallback cb);
-        Window& disableClipboardFiles();
-
         // 窗口状态查询
         bool isOpen() const { return !shouldClose_; }
+        bool isVisible() const { return hwnd_ && IsWindowVisible(hwnd_); }
         bool isMaximized() const { return hwnd_ && IsZoomed(hwnd_); }
         bool isMinimized() const { return hwnd_ && IsIconic(hwnd_); }
-        bool isVisible() const { return hwnd_ && IsWindowVisible(hwnd_); }
         bool isFullscreen() const { return isFullscreen_; }
 
         // 窗口操作
-        Window& close();
         Window& show();
         Window& hide();
-        Window& maximize();
-        Window& minimize();
-        Window& restore();
+        Window& close();
         Window& setVisible(bool visible);
         Window& focus();
-        Window& flash(bool flashTitleBar = true);
 
         // 窗口大小和位置
         Window& setPosition(int x, int y);
@@ -226,7 +213,38 @@ namespace pa2d {
         void getClientSize(int& width, int& height) const;
         void getWindowSize(int& width, int& height) const;
 
-        // 窗口样式控制
+        // 渲染功能
+        void render(const Canvas& canvas, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
+        void renderCentered(const Canvas& canvas, bool clearBackground = true, COLORREF bgColor = 0);
+        void render(const Buffer& buffer, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
+        void renderCentered(const Buffer& buffer, bool clearBackground = true, COLORREF bgColor = 0);
+
+        // ==================== 事件回调 ====================
+        Window& onKey(KeyCallback cb);
+        Window& onMouse(MouseCallback cb);
+        Window& onResize(ResizeCallback cb);
+        Window& onClose(CloseCallback cb);
+        Window& onChar(CharCallback cb);
+        Window& onFocus(FocusCallback cb);
+        Window& onMenu(MenuCallback cb);
+        Window& onFileDrop(FileListCallback cb);
+        Window& onClipboardFiles(FileListCallback cb);
+        Window& disableClipboardFiles();
+
+        // ==================== 输入状态 ====================
+        std::pair<int, int> getMousePosition() const;
+        bool isMouseInWindow() const;
+        bool isMouseButtonPressed(int button) const;
+        bool isKeyPressed(int vkCode) const;
+        bool isShiftPressed() const;
+        bool isCtrlPressed() const;
+        bool isAltPressed() const;
+
+        // ==================== 高级窗口控制 ====================
+        Window& maximize();
+        Window& minimize();
+        Window& restore();
+        Window& flash(bool flashTitleBar = true);
         Window& setResizable(bool resizable);
         Window& setAlwaysOnTop(bool onTop);
         Window& setBorderless(bool borderless);
@@ -237,12 +255,10 @@ namespace pa2d {
         Window& setMaximizeButton(bool show);
         Window& setCloseButton(bool show);
 
-        // 标题设置
+        // ==================== 外观设置 ====================
         Window& setTitle(const char* title);
         Window& setTitle(const wchar_t* title);
         std::string getTitle() const;
-
-        // 光标控制
         Window& setCursor(HCURSOR cursor);
         Window& setCursorDefault();
         Window& setCursorWait();
@@ -251,12 +267,24 @@ namespace pa2d {
         Window& setCursorText();
         Window& setCursorVisibility(bool visible);
         Window& setCursorPosition(int x, int y);
-
-        // 图标设置
         Window& setIcon(HICON icon);
         Window& setIconFromResource(int resourceId);
 
-        // 菜单功能
+        // ==================== 输入控制 ====================
+        Window& setMouseCapture(bool capture);
+        static std::pair<int, int> getGlobalMousePosition();
+
+        // ==================== 剪贴板和文件 ====================
+        bool setClipboardText(const std::string& text);
+        std::string getClipboardText();
+        bool setClipboardText(const std::wstring& text);
+        std::wstring getClipboardTextW();
+        bool hasClipboardText() const;
+        std::vector<std::string> getClipboardFiles();
+        bool hasClipboardFiles() const;
+        Window& enableFileDrop(bool enable = true);
+
+        // ==================== 菜单功能 ====================
         Window& setMenu(HMENU menu);
         HMENU createMenu();
         HMENU createPopupMenu();
@@ -265,41 +293,14 @@ namespace pa2d {
         Window& appendMenuPopup(HMENU menu, const char* text, HMENU popupMenu);
         Window& destroyMenu(HMENU menu);
 
-        // 鼠标状态
-        std::pair<int, int> getMousePosition() const;
-        bool isMouseInWindow() const;
-        bool isMouseButtonPressed(int button) const;
-        Window& setMouseCapture(bool capture);
-        static std::pair<int, int> getGlobalMousePosition();
-
-        // 键盘状态
-        bool isKeyPressed(int vkCode) const;
-        bool isShiftPressed() const;
-        bool isCtrlPressed() const;
-        bool isAltPressed() const;
-
-        // 剪贴板操作
-        bool setClipboardText(const std::string& text);
-        std::string getClipboardText();
-        bool setClipboardText(const std::wstring& text);
-        std::wstring getClipboardTextW();
-        bool hasClipboardText() const;
-        std::vector<std::string> getClipboardFiles();
-        bool hasClipboardFiles() const;
-
-        // 文件拖放
-        Window& enableFileDrop(bool enable = true);
-
-        // 渲染功能
-        void render(const Buffer& buffer, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
-        void renderCentered(const Buffer& buffer, bool clearBackground = true, COLORREF bgColor = 0);
-        void render(const Canvas& canvas, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
-        void renderCentered(const Canvas& canvas, bool clearBackground = true, COLORREF bgColor = 0);
-
-        // 系统信息
+        // ==================== 系统信息 ====================
         static std::pair<int, int> getScreenSize();
         static std::pair<int, int> getWorkAreaSize();
         static double getDpiScale();
+
+        // 禁止拷贝
+        Window(const Window&) = delete;
+        Window& operator=(const Window&) = delete;
    private:
        std::thread messageThread_; std::atomic<bool> running_{ false }; DWORD threadId_ = 0; std::promise<bool> initPromise_;
        LONG borderlessOriginalStyle_ = 0; LONG borderlessOriginalExStyle_ = 0; int borderlessOriginalClientWidth_ = 0; int borderlessOriginalClientHeight_ = 0; bool borderlessStateSaved_ = false; bool isBorderless_ = false;
@@ -633,32 +634,30 @@ namespace pa2d {
     // 图形渲染
     void drawLine(Buffer& buffer, float fx0, float fy0, float fx1, float fy1, const Color& color, float lineWidth = 1.0f);
     void drawPolyline(Buffer& buffer, const std::vector<Point>& points, const Color& color, float lineWidth = 1.0f, bool closed = false);
+    void drawPolygon(Buffer& buffer, const std::vector<Point>& vertices, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawTriangle(Buffer& buffer, float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawRect(Buffer& buffer, float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawRect(Buffer& buffer, float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawRoundRect(Buffer& buffer, float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawRoundRect(Buffer& buffer, float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawCircle(Buffer& buffer, float centerX, float centerY, float radius, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawTriangle(Buffer& buffer, float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawEllipse(Buffer& buffer, float cx, float cy, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawEllipse(Buffer& buffer, float cx, float cy, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     void drawSector(Buffer& buffer, float cx, float cy, float radius, float startAngleDeg, float endAngleDeg, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f, bool drawArc = true, bool drawRadialEdges = true);
-    void drawPolygon(Buffer& buffer, const std::vector<Point>& vertices, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
     // 文字测量函数
     bool measureText(const std::wstring& text, int fontSize, const std::wstring& fontName, const FontStyle& style, int& width, int& height);
     bool measureText(const std::string& text, int fontSize, const std::string& fontName, const FontStyle& style, int& width, int& height);
     int calculateFontSize(const std::wstring& text, float maxWidth, float maxHeight, int preferredFontSize = 12, const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     int calculateFontSize(const std::string& text, float maxWidth, float maxHeight, int preferredFontSize = 12, const std::string& fontName = "Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
-    //文字渲染函数（string版）
+    //文字渲染函数
     bool drawText(Buffer& buffer, const std::string& text, float x, float y, const Color& color = Color(255, 255, 255, 255), int fontSize = 16, const std::string& fontName = "Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     void drawTextInRect(Buffer& buffer, const std::string& text, float rectX, float rectY, float rectWidth, float rectHeight, const Color& color = Color(255, 255, 255, 255), int fontSize = 16, const std::string& fontName = "Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     void drawTextFitRect(Buffer& buffer, const std::string& text, float rectX, float rectY, float rectWidth, float rectHeight, const Color& color = Color(255, 255, 255, 255), int preferredFontSize = 12, const std::string& fontName = "Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     void drawTextCentered(Buffer& buffer, const std::string& text, float centerX, float centerY, const Color& color = Color(255, 255, 255, 255), int fontSize = 16, const std::string& fontName = "Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
-    //文字渲染函数（wstring版）
     bool drawText(Buffer& buffer, const std::wstring& text, float x, float y, const Color& color = Color(255, 255, 255, 255), int fontSize = 16, const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     void drawTextInRect(Buffer& buffer, const std::wstring& text, float rectX, float rectY, float rectWidth, float rectHeight, const Color& color = Color(255, 255, 255, 255), int fontSize = 16, const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     void drawTextFitRect(Buffer& buffer, const std::wstring& text, float rectX, float rectY, float rectWidth, float rectHeight, const Color& color = Color(255, 255, 255, 255), int preferredFontSize = 12, const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     void drawTextCentered(Buffer& buffer, const std::wstring& text, float centerX, float centerY, const Color& color = Color(255, 255, 255, 255), int fontSize = 16, const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
-
     // ==================== Style 字面量扩展 ====================
     struct StyleBuilder;
     struct TagBase {
