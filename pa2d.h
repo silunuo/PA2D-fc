@@ -98,20 +98,20 @@ namespace pa2d {
         // 线和多边形
         Canvas& line(float x0, float y0, float x1, float y1, const Color& color, float lineWidth = 1.0f);
         Canvas& polyline(const std::vector<Point>& points, const Color& color, float lineWidth = 1.0f, bool closed = false);
-        Canvas& polygon(const std::vector<Point>& vertices, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& polygon(const std::vector<Point>& vertices, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         // 三角形
-        Canvas& triangle(float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& triangle(float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         // 矩形相关
-        Canvas& rect(float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-        Canvas& rect(float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-        Canvas& roundRect(float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
-        Canvas& roundRect(float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& rect(float x, float y, float width, float height, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& rect(float centerX, float centerY, float width, float height, float angle, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& roundRect(float x, float y, float width, float height, const Color& fillColor, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& roundRect(float centerX, float centerY, float width, float height, float angle, const Color& fillColor, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
         // 圆形和椭圆
-        Canvas& circle(float centerX, float centerY, float radius, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-        Canvas& ellipse(float cx, float cy, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-        Canvas& ellipse(float cx, float cy, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& circle(float centerX, float centerY, float radius, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& ellipse(float cx, float cy, float width, float height, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+        Canvas& ellipse(float cx, float cy, float width, float height, float angle, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
         // 扇形
-        Canvas& sector(float cx, float cy, float radius, float startAngleDeg, float endAngleDeg, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f, bool drawArc = true, bool drawRadialEdges = true);
+        Canvas& sector(float cx, float cy, float radius, float startAngleDeg, float endAngleDeg, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f, bool drawArc = true, bool drawRadialEdges = true);
 
         // ==================== 图像混合 ====================
         Canvas& alphaBlend(const Canvas& src, int dstX = 0, int dstY = 0, int alpha = 255);
@@ -615,16 +615,16 @@ namespace pa2d {
     // 图形渲染
     void drawLine(Buffer& buffer, float fx0, float fy0, float fx1, float fy1, const Color& color, float lineWidth = 1.0f);
     void drawPolyline(Buffer& buffer, const std::vector<Point>& points, const Color& color, float lineWidth = 1.0f, bool closed = false);
-    void drawPolygon(Buffer& buffer, const std::vector<Point>& vertices, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawTriangle(Buffer& buffer, float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawRect(Buffer& buffer, float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawRect(Buffer& buffer, float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawRoundRect(Buffer& buffer, float x, float y, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawRoundRect(Buffer& buffer, float centerX, float centerY, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawCircle(Buffer& buffer, float centerX, float centerY, float radius, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawEllipse(Buffer& buffer, float cx, float cy, float width, float height, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawEllipse(Buffer& buffer, float cx, float cy, float width, float height, float angle, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
-    void drawSector(Buffer& buffer, float cx, float cy, float radius, float startAngleDeg, float endAngleDeg, const Color& fillColor = 0, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f, bool drawArc = true, bool drawRadialEdges = true);
+    void drawPolygon(Buffer& buffer, const std::vector<Point>& vertices, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawTriangle(Buffer& buffer, float ax, float ay, float bx, float by, float cx, float cy, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawRect(Buffer& buffer, float x, float y, float width, float height, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawRect(Buffer& buffer, float centerX, float centerY, float width, float height, float angle, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawRoundRect(Buffer& buffer, float x, float y, float width, float height, const Color& fillColor, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawRoundRect(Buffer& buffer, float centerX, float centerY, float width, float height, float angle, const Color& fillColor, const Color& strokeColor = 0, float cornerRadius = 0.0f, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawCircle(Buffer& buffer, float centerX, float centerY, float radius, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawEllipse(Buffer& buffer, float cx, float cy, float width, float height, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawEllipse(Buffer& buffer, float cx, float cy, float width, float height, float angle, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f);
+    void drawSector(Buffer& buffer, float cx, float cy, float radius, float startAngleDeg, float endAngleDeg, const Color& fillColor, const Color& strokeColor = 0, float strokeWidth = 1.0f, float opacity = 1.0f, bool drawArc = true, bool drawRadialEdges = true);
     // ==================== 底层图像算法 ====================
     // 图像加载
     bool load_image(Buffer& buffer, const char* filePath);
