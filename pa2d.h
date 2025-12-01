@@ -220,10 +220,10 @@ namespace pa2d {
         void getWindowSize(int& width, int& height) const;
 
         // 渲染功能
-        void render(const Canvas& canvas, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
-        void renderCentered(const Canvas& canvas, bool clearBackground = true, COLORREF bgColor = 0);
-        void render(const Buffer& buffer, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
-        void renderCentered(const Buffer& buffer, bool clearBackground = true, COLORREF bgColor = 0);
+        Window& render(const Canvas& canvas, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
+        Window& renderCentered(const Canvas& canvas, bool clearBackground = true, COLORREF bgColor = 0);
+        Window& render(const Buffer& buffer, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
+        Window& renderCentered(const Buffer& buffer, bool clearBackground = true, COLORREF bgColor = 0);
 
         // ==================== 事件回调 ====================
         Window& onKey(KeyCallback cb);
@@ -329,6 +329,8 @@ namespace pa2d {
         float radius_;        Style& radius(float v);
         bool drawArc_;        Style& drawArc(bool v);
         bool drawRadialEdges_; Style& drawRadialEdges(bool v);
+        Style operator+(const Style& other) const;
+        Style& operator+=(const Style& other);
     };
     // ==================== 几何对象 ====================
     struct BoundingBox {
