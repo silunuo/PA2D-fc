@@ -16,7 +16,7 @@
 //   - Pure C++11 implementation
 //
 // Requirements:
-//   - C++11 or later
+//   - C++14 or later
 //   - Windows 7 or newer
 //   - AVX2-capable CPU
 //   - Compile with /arch:AVX2
@@ -643,3 +643,4 @@ namespace pa2d {
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
 }
+
