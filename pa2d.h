@@ -161,7 +161,7 @@ namespace pa2d {
     };
     struct MouseEvent {
         int x, y;
-        int button;       // 0=Left, 1=Right, 2=Middle, -1=Wheel, -2=Move, -3=Leave
+        int button;       // Button identifier: 0=Left, 1=Right, 2=Middle, -1=Wheel, -2=Move, -3=Leave
         bool pressed;     // Press/release for buttons
         int wheelDelta;   // Wheel increment
     };
@@ -643,3 +643,4 @@ namespace pa2d {
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
 }
+
