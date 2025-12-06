@@ -22,7 +22,11 @@
 //   - Compile with /arch:AVX2
 //
 // ============================================================
-#include <windows.h>
+typedef void* HWND;
+typedef void* HMENU;
+typedef void* HICON;
+typedef void* HCURSOR;
+typedef unsigned long COLORREF;
 #include <vector>
 #include <cstdint>
 #include <string>
@@ -205,9 +209,9 @@ namespace pa2d {
         void getClientSize(int& width, int& height) const;
         void getWindowSize(int& width, int& height) const;
         // ==================== RENDERING ====================
-        Window& render(const Canvas& canvas, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = RGB(0,0,0));
+        Window& render(const Canvas& canvas, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
         Window& renderCentered(const Canvas& canvas, bool clearBackground = true, COLORREF bgColor = 0);
-        Window& render(const Buffer& buffer, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = RGB(0, 0, 0));
+        Window& render(const Buffer& buffer, int destX = 0, int destY = 0, int srcX = 0, int srcY = 0, int width = -1, int height = -1, bool clearBackground = true, COLORREF bgColor = 0);
         Window& renderCentered(const Buffer& buffer, bool clearBackground = true, COLORREF bgColor = 0);
         // ==================== EVENT CALLBACKS ====================
         Window& onKey(KeyCallback cb);
@@ -643,4 +647,3 @@ namespace pa2d {
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
 }
-
