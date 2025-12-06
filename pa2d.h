@@ -1,19 +1,27 @@
 #pragma once
-/*
- * PA2D - CPU-Side Software 2D Graphics LibraryPure Software Rendering
- *
- * GitHub:  https://github.com/thss192/PA2D
- * Docs:    https://PrismArch.cn
- * Email:   1926224891@qq.com
- *
- * Version: 1.0.0 (2025-12-07)
- *
- * Graphics: CPU software renderer with AVX2 optimization
- * Text:     Windows GDI (font rendering)
- *
- * Requires: C++14, Windows 7+, AVX2 CPU
- * Build:    Compile with /arch:AVX2
- */
+// ============================================================
+// PA2D - Pure Software 2D Graphics Library for Windows
+// ============================================================
+//
+// Repository: https://github.com/thss192/PA2D
+// Documentation: https://PrismArch.cn
+// Contact: 1926224891@qq.com
+//
+// Version: 1.0.0 (Released: 2025-12-07)
+// Build Timestamp: Dec 7 2025 04:42:54
+//
+// Features:
+//   - CPU software renderer with AVX2 optimization
+//   - Windows GDI for font rendering
+//   - Pure C++11 implementation
+//
+// Requirements:
+//   - C++11 or later
+//   - Windows 7 or newer
+//   - AVX2-capable CPU
+//   - Compile with /arch:AVX2
+//
+// ============================================================
 #include <windows.h>
 #include <vector>
 #include <cstdint>
@@ -44,14 +52,14 @@ namespace pa2d {
     struct Buffer {
         Color* color;
         int width, height;
-        Buffer(int width = 0, int height = 0, const Color& init_color = 0);
+        Buffer(int width = 0, int height = 0, const Color& init_color = None);
         Buffer(const Buffer& other);Buffer(Buffer&& other) noexcept;
         ~Buffer();
         size_t size() const { return static_cast<size_t>(width) * height; }
         Color& at(int x, int y);
         const Color& at(int x, int y) const;
         static void copy(Buffer& dest, const Buffer& src);
-        void resize(int newWidth, int newHeight, const Color& clear_color = 0);
+        void resize(int newWidth, int newHeight, const Color& clear_color = None);
         void clear(const Color& clear_color = 0);
         Buffer& operator=(const Buffer& other);
         Buffer& operator=(Buffer&& other) noexcept;
@@ -157,7 +165,7 @@ namespace pa2d {
         bool pressed;     // Press/release for buttons
         int wheelDelta;   // Wheel increment
     };
-    // 事件回调类型定义
+    // Event callback type definitions
     using KeyCallback = std::function<void(const KeyEvent&)>;
     using MouseCallback = std::function<void(const MouseEvent&)>;
     using ResizeCallback = std::function<void(int, int)>;
@@ -272,7 +280,7 @@ namespace pa2d {
         static std::pair<int, int> getScreenSize();
         static std::pair<int, int> getWorkAreaSize();
         static double getDpiScale();
-        // 禁止拷贝
+        // Non-copyable
         Window(const Window&) = delete;
         Window& operator=(const Window&) = delete;
         Window(Window&&) = delete;
@@ -612,11 +620,13 @@ namespace pa2d {
     void drawScaledBuffer(Buffer&, const Buffer&, float, float, float);
     void drawRotatedBuffer(Buffer&, const Buffer&, float, float, float);
     void drawTransformedBuffer(Buffer&, const Buffer&, float, float, float, float);
+    void drawTransformedBuffer(Buffer&, const Buffer&, float, float, float, float, float);
     Buffer crop(const Buffer&, int, int, int, int);
     Buffer scaled(const Buffer&, float, float);
     Buffer scaled(const Buffer&, float);
     Buffer rotated(const Buffer&, float);
     Buffer transformed(const Buffer&, float, float);
+    Buffer transformed(const Buffer&, float, float, float);
     void copyBlend(const Buffer&, Buffer&, int, int, int);
     void alphaBlend(const Buffer&, Buffer&, int, int, int);
     void addBlend(const Buffer&, Buffer&, int, int, int);
@@ -633,4 +643,3 @@ namespace pa2d {
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
 }
-
