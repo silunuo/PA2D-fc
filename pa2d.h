@@ -1,6 +1,6 @@
 #pragma once
 // ============================================================
-// PA2D - CPU - Side Software 2D Graphics LibraryPure Software Rendering
+// PA2D - CPU-Side Software 2D Graphics Library | Pure Software Rendering
 // ============================================================
 //
 // Copyright (c) 2025 PrismArch. All rights reserved.
@@ -652,3 +652,4 @@ namespace pa2d {
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
 }
+
