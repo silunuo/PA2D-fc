@@ -1,8 +1,7 @@
 #pragma once
-// ============================================================
+// ======================================================================
 // PA2D - CPU-Side Software 2D Graphics Library | Pure Software Rendering
-// ============================================================
-//
+// ======================================================================
 // Copyright (c) 2025 PrismArch. All rights reserved.
 //
 // Repository: https://github.com/thss192/PA2D
@@ -25,13 +24,7 @@
 //   - Windows 7 or newer
 //   - AVX2-capable CPU
 //   - Compile with /arch:AVX2
-//
-// ============================================================
-typedef void* HWND;
-typedef void* HMENU;
-typedef void* HICON;
-typedef void* HCURSOR;
-typedef unsigned long COLORREF;
+// ======================================================================
 #include <vector>
 #include <cstdint>
 #include <string>
@@ -44,8 +37,15 @@ typedef unsigned long COLORREF;
 #endif
 namespace pa2d {
     // ==================== VERSION ====================
-    // pa2d v1.0.0 | Release: 2025-12-07 | Build: Dec 7 2025 04:42:54
+    // Get library version information
     const char* getVersion();
+    // ============= WINDOWS HANDLE TYPES =============
+    // These are defined as void* to avoid conflicts with windows.h
+    using HWND = void*;
+    using HMENU = void*;
+    using HICON = void*;
+    using HCURSOR = void*;
+    using COLORREF = unsigned long;
     // ==================== Color(ARGB) ====================
     struct Color {
         union { uint32_t data, argb; struct { uint8_t b, g, r, a; }; struct { uint32_t rgb : 24, _ : 8; }; };
@@ -53,16 +53,20 @@ namespace pa2d {
         Color(uint8_t alpha, const Color& base) : data((static_cast<uint32_t>(alpha) << 24) | (base.data & 0x00FFFFFF)) {}
         operator uint32_t() const { return data; }
     };
-    const Color White = 0xFFFFFFFF, Black     = 0xFF000000, None     = 0x00000000;
-    const Color Red   = 0xFFFF0000, Green     = 0xFF00FF00, Blue     = 0xFF0000FF;
-    const Color Cyan  = 0xFF00FFFF, Magenta   = 0xFFFF00FF, Yellow   = 0xFFFFFF00;
-    const Color Gray  = 0xFF808080, LightGray = 0xFFC0C0C0, DarkGray = 0xFF404040;
-    // ==================== Buffer ====================
+    const Color White = 0xFFFFFFFF, Black = 0xFF000000, None = 0x00000000;
+    const Color Red = 0xFFFF0000, Green = 0xFF00FF00, Blue = 0xFF0000FF;
+    const Color Cyan = 0xFF00FFFF, Magenta = 0xFFFF00FF, Yellow = 0xFFFFFF00;
+    const Color Gray = 0xFF808080, LightGray = 0xFFC0C0C0, DarkGray = 0xFF404040;
+    // ==================== BUFFER ====================
+    // Pixel buffer container with SIMD-optimized operations
+    // Note: For best performance, access color pointer directly instead of using at()
+    // All rendering is off-screen to Buffers - Window renders Buffer to display
     struct Buffer {
-        Color* color;
+        Color* color;        // Direct pixel data access (row-major layout)
         int width, height;
         Buffer(int width = 0, int height = 0, const Color& color = None);
-        Buffer(const Buffer& other);Buffer(Buffer&& other) noexcept;
+        Buffer(const Buffer& other);
+        Buffer(Buffer&& other) noexcept;
         ~Buffer();
         size_t size() const { return static_cast<size_t>(width) * height; }
         Color& at(int x, int y);
@@ -76,13 +80,18 @@ namespace pa2d {
     };
     struct Point; class Points; class Line; class Ray; class Triangle; class Rect; class Polygon; class Circle; class Elliptic; class Sector; struct Style;
     // ==================== TEXT STYLES ====================
+    // Windows GDI-based text rendering with optional anti-aliasing
+    // Note: For Chinese Windows systems, use ANSI or UTF8 with GBK compatibility
+    //       For international users, UTF8 is recommended (prefix strings with u8)
+    //       CURRENT parameter keeps current encoding unchanged, used for querying only
+    //       textEncoding() serves triple purpose: get/set/store encoding state
     enum class TextEncoding { ANSI, UTF8, UTF16, CURRENT };
     TextEncoding textEncoding(TextEncoding newEncoding = TextEncoding::CURRENT);
     void setTextAntiAliasing(bool enable);
     class FontStyle {
-        int styleBits_; float italicAngle_ , rotationAngle_;
+        int styleBits_; float italicAngle_, rotationAngle_;
     public:
-        static const FontStyle Regular, Bold,Italic,Underline,Strikeout;
+        static const FontStyle Regular, Bold, Italic, Underline, Strikeout;
         FontStyle italicAngle(float angle) const;
         FontStyle rotation(float angle) const;
         FontStyle operator|(const FontStyle& other) const;
@@ -91,9 +100,12 @@ namespace pa2d {
     };
     bool measureText(const std::wstring& text, int fontSize, const std::wstring& fontName, const FontStyle& style, int& width, int& height);
     bool measureText(const std::string& text, int fontSize, const std::string& fontName, const FontStyle& style, int& width, int& height);
-    int calculateFontSize(const std::wstring& text, float maxWidth, float maxHeight, int preferredFontSize , const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
+    int calculateFontSize(const std::wstring& text, float maxWidth, float maxHeight, int preferredFontSize, const std::wstring& fontName = L"Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     int calculateFontSize(const std::string& text, float maxWidth, float maxHeight, int preferredFontSize, const std::string& fontName = "Microsoft YaHei", const FontStyle& style = FontStyle::Regular);
     // ==================== CANVAS ====================
+    // High-level drawing interface (proxy for Buffer API)
+    // Each Canvas contains an internal Buffer with automatic management
+    // All drawing operations are anti-aliased by default
     class Canvas {
         Buffer buffer;
     public:
@@ -105,13 +117,14 @@ namespace pa2d {
         int width() const; int height() const;
         Color& at(int x, int y); const Color& at(int x, int y) const;
         const Buffer& getBuffer() const; Buffer& getBuffer();
+        Canvas& operator=(const Canvas& other);
+        Canvas& operator=(const Buffer& buffer);
         // ==================== IMAGE OPERATIONS ====================
         bool loadImage(const char* filePath); bool loadImage(int resourceID);
         Canvas& clear(Color color = White);
         Canvas& crop(int x, int y, int width, int height);
         Canvas& resize(int newWidth, int newHeight, uint32_t color = White);
         // ==================== BASIC SHAPES ====================
-        // Note: Anti-aliasing enabled by default for all shapes
         Canvas& line(float x0, float y0, float x1, float y1, const Color& color, float strokeWidth = 1.0f);
         Canvas& polyline(const std::vector<Point>& points, const Color& color, float strokeWidth = 1.0f, bool closed = false);
         Canvas& polygon(const std::vector<Point>& vertices, const Color& fillColor, const Color& strokeColor = None, float strokeWidth = 1.0f);
@@ -164,6 +177,11 @@ namespace pa2d {
         Canvas& textFitRect(const std::string& text, int rectX, int rectY, int rectWidth, int rectHeight, const Color& color = Black, int preferredFontSize = 12, const std::string& fontName = "Microsoft YaHei", FontStyle style = FontStyle::Regular);
     };
     // ==================== WINDOW ====================
+    // Thread-per-window architecture (background message loops)
+    // Multiple windows supported - avoid concurrent Canvas access across threads
+    // Note: Windows are created hidden - must call window.show() to display
+    //       Windows use explicit rendering - call render() after show() and for content updates
+    //       Resize may clip content - listen to onResize event and re-render accordingly
     struct KeyEvent {
         int keyCode;
         bool pressed;
@@ -205,6 +223,7 @@ namespace pa2d {
         Window& setVisible(bool visible);
         Window& focus();
         // ==================== BLOCKING WAIT ====================
+        // Note: Blocks this thread until the window is closed
         Window& waitForClose();
         // ==================== SIZE & POSITION ====================
         Window& setPosition(int x, int y);
@@ -294,11 +313,14 @@ namespace pa2d {
         Window& operator=(const Window&) = delete;
         Window(Window&&) = delete;
         Window& operator=(Window&&) = delete;
-   private:
-       struct Impl;
-       Impl* pImpl_;
+    private:
+        struct Impl;
+        Impl* pImpl_;
     };
     // ==================== GEOMETRY STYLE ====================
+    // Fluent-style drawing configuration with user-defined literals
+    // Use: Style().fill(Red).stroke(Black).width(2.0f) 
+    // Or:  0xffff0000_fill + 0xff000000_stroke + 2.0_w + 5.0_r
     struct Style {
         Color fillColor_ = 0;       Style& fill(Color v) { fillColor_ = v; return *this; }
         Color strokeColor_ = 0;     Style& stroke(Color v) { strokeColor_ = v; return *this; }
@@ -311,20 +333,29 @@ namespace pa2d {
         Style operator+(const Style& other) const;
         Style& operator+=(const Style& other);
     };
+}
 #ifndef PA2D_DISABLE_LITERALS
-    extern const Style arc;    extern const Style no_arc;
-    extern const Style edges;  extern const Style no_edges;
-    inline Style operator"" _fill(unsigned long long hex) { return Style().fill(static_cast<uint32_t>(hex)); }
-    inline Style operator"" _stroke(unsigned long long hex) { return Style().stroke(static_cast<uint32_t>(hex)); }
-    inline Style operator"" _w(long double w) { return Style().width(static_cast<float>(w)); }
-    inline Style operator"" _w(unsigned long long w) { return Style().width(static_cast<float>(w)); }
-    inline Style operator"" _r(long double r) { return Style().radius(static_cast<float>(r)); }
-    inline Style operator"" _r(unsigned long long r) { return Style().radius(static_cast<float>(r)); }
+// Disable literals with: #define PA2D_DISABLE_LITERALS before including pa2d.h
+extern const pa2d::Style arc;    extern const pa2d::Style no_arc;     // Sector arc control
+extern const pa2d::Style edges;  extern const pa2d::Style no_edges;   // Sector edges control
+inline pa2d::Style operator"" _fill(unsigned long long hex) { return pa2d::Style().fill(static_cast<uint32_t>(hex)); }
+inline pa2d::Style operator"" _stroke(unsigned long long hex) { return pa2d::Style().stroke(static_cast<uint32_t>(hex)); }
+inline pa2d::Style operator"" _w(long double w) { return pa2d::Style().width(static_cast<float>(w)); }
+inline pa2d::Style operator"" _w(unsigned long long w) { return pa2d::Style().width(static_cast<float>(w)); }
+inline pa2d::Style operator"" _r(long double r) { return pa2d::Style().radius(static_cast<float>(r)); }
+inline pa2d::Style operator"" _r(unsigned long long r) { return pa2d::Style().radius(static_cast<float>(r)); }
+namespace pa2d {
+    // Parse color string to ARGB value
+    // Supported formats: "#RGB", "#RRGGBB", "#AARRGGBB", "R,G,B", "A,R,G,B"
+    // Note: No other formats (color names, rgb(), etc.) are supported
     uint32_t parseColorString(const char* str, size_t len);
-    inline Style operator"" _fill(const char* str, size_t len) { return Style().fill(parseColorString(str, len)); }
-    inline Style operator"" _stroke(const char* str, size_t len) { return Style().stroke(parseColorString(str, len)); }
+}
+inline pa2d::Style operator"" _fill(const char* str, size_t len) { return pa2d::Style().fill(pa2d::parseColorString(str, len)); }
+inline pa2d::Style operator"" _stroke(const char* str, size_t len) { return pa2d::Style().stroke(pa2d::parseColorString(str, len)); }
 #endif
+namespace pa2d {
     // ==================== GEOMETRY OBJECTS ====================
+    // Geometry objects with unified transformation interface
     struct Point {
         float x, y;
         Point() :x(0), y(0) {}; Point(float x, float y);
@@ -351,27 +382,31 @@ namespace pa2d {
         Point center() const;
         bool contains(float px, float py) const;
     };
-#define SHAPE_API(ClassName, PureVirtual) /* Shape unified interface macro */ \
-    virtual ClassName& translate(float dx, float dy) PureVirtual; /* Translate */ \
-    virtual ClassName& translate(Point delta) PureVirtual; /* Vector translation */ \
-    virtual ClassName& scale(float factor) PureVirtual; /* Uniform scaling */ \
-    virtual ClassName& scale(float factorX, float factorY) PureVirtual; /* Non-uniform scaling */ \
-    virtual ClassName& scaleOnSelf(float factorX, float factorY) PureVirtual; /* Scale around center (XY) */ \
-    virtual ClassName& scaleOnSelf(float factor) PureVirtual; /* Scale around center */ \
-    virtual ClassName& rotate(float angleDegrees, float centerX, float centerY) PureVirtual; /* Rotate around point */ \
-    virtual ClassName& rotate(float angleDegrees, Point center) PureVirtual; /* Rotate around point */ \
-    virtual ClassName& rotate(float angleDegrees) PureVirtual; /* Self-rotation */ \
-    virtual ClassName& rotateOnSelf(float angleDegrees) PureVirtual; /* Self-rotation */ \
-    virtual bool contains(Point point) const PureVirtual; /* Point containment test */ \
-    virtual BoundingBox getBoundingBox() const PureVirtual; /* Bounding box */ \
-    virtual Point getCenter() const PureVirtual /* Center point */
-#define TO_POINTS()  /* Shape to vector<Point> conversion macro */\
-    operator std::vector<Point>()&; /* L-value conversion */ \
-    operator std::vector<Point>() const&; /* Const conversion */ \
-    operator std::vector<Point>()&& /* R-value conversion */
+    // ==================== SHAPE SYSTEM MACROS ====================
+    // Helper macros for uniform shape interface declaration
+    // Note: Geometric transformations default to origin (0,0) 
+    //       Use OnSelf variants for transformations around shape's own center
+#define SHAPE_API(ClassName, PureVirtual) \
+    virtual ClassName& translate(float dx, float dy) PureVirtual; \
+    virtual ClassName& translate(Point delta) PureVirtual; \
+    virtual ClassName& scale(float factor) PureVirtual; \
+    virtual ClassName& scale(float factorX, float factorY) PureVirtual; \
+    virtual ClassName& scaleOnSelf(float factorX, float factorY) PureVirtual; \
+    virtual ClassName& scaleOnSelf(float factor) PureVirtual; \
+    virtual ClassName& rotate(float angleDegrees, float centerX, float centerY) PureVirtual; \
+    virtual ClassName& rotate(float angleDegrees, Point center) PureVirtual; \
+    virtual ClassName& rotate(float angleDegrees) PureVirtual; \
+    virtual ClassName& rotateOnSelf(float angleDegrees) PureVirtual; \
+    virtual bool contains(Point point) const PureVirtual; \
+    virtual BoundingBox getBoundingBox() const PureVirtual; \
+    virtual Point getCenter() const PureVirtual
+#define TO_POINTS() \
+    operator std::vector<Point>()&; \
+    operator std::vector<Point>() const&; \
+    operator std::vector<Point>()&&
     class Shape {
     public:
-        enum class GeometryType {POINTS,LINE,POLYGON,RECT,TRIANGLE,CIRCLE,ELLIPTIC,SECTOR,RAY};
+        enum class GeometryType { POINTS, LINE, POLYGON, RECT, TRIANGLE, CIRCLE, ELLIPTIC, SECTOR, RAY };
         virtual ~Shape() = default;
         GeometryType getType() const { return type; }
         SHAPE_API(Shape, = 0);
@@ -572,6 +607,7 @@ namespace pa2d {
 #undef SHAPE_API
 #undef TO_POINTS
     // ==================== PATH BUILDER ====================
+    // WRONG: auto result = pa2d::Path::from(x, y)...;  // Don't do this!
     class Path {
         class Builder {
             std::vector<Point> points_;
@@ -595,9 +631,9 @@ namespace pa2d {
             operator std::vector<Point>()&;
             operator std::vector<Point>() const& = delete;
             template<typename T>
-            operator T()&&;
+            operator T()&& { return T(std::move(points_)); }
             template<typename T>
-            operator T()&;
+            operator T()& { return T(points_); }
             template<typename T>
             operator T() const& = delete;
         };
@@ -610,6 +646,8 @@ namespace pa2d {
         static Builder from(const Point& start);
     };
     // ==================== BUFFER API ====================
+    // Direct buffer manipulation
+    // Canvas acts as a proxy layer over these functions - each Canvas contains an internal Buffer
     void line(Buffer&, float, float, float, float, const Color&, float);
     void polyline(Buffer&, const std::vector<Point>&, const Color&, float, bool);
     void polygon(Buffer&, const std::vector<Point>&, const Color&, const Color&, float);
@@ -652,4 +690,3 @@ namespace pa2d {
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
 }
-
