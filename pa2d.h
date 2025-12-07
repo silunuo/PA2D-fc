@@ -224,7 +224,7 @@ namespace pa2d {
         Window& focus();
         // ==================== BLOCKING WAIT ====================
         // Note: Blocks this thread until the window is closed
-        Window& waitForClose();
+        void waitForClose();
         // ==================== SIZE & POSITION ====================
         Window& setPosition(int x, int y);
         Window& setClientSize(int width, int height);
@@ -689,4 +689,5 @@ namespace pa2d {
     void textInRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textFitRect(Buffer&, const std::wstring&, float, float, float, float, const Color&, int, const std::wstring&, const FontStyle&);
     void textCentered(Buffer&, const std::wstring&, float, float, const Color&, int, const std::wstring&, const FontStyle&);
+
 }
