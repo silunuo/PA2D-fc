@@ -1,111 +1,133 @@
+# PA2D
 
-### 1. 什么是 PA2D？ | What is PA2D?
+## 1. 什么是 PA2D？ | What is PA2D?
 
-在编程创作过程中，我接触了 EasyX，这个能让人快速开发窗口界面的库，并开始痴迷于图形化创作。  
-*In my programming journey, I encountered EasyX, a library that allows quick window interface development, and became fascinated with graphical creation.*
+<small>在编程创作过程中，我接触了 EasyX，这个能让人快速开发窗口界面的库，并开始痴迷于图形化创作。  
+*In my programming journey, I encountered EasyX, a library that allows quick window interface development, and became fascinated with graphical creation.*</small>
 
-当时我需要绘制带有透明度的贴图，而 EasyX 本身并不支持透明度渲染。我从网上找到了通过操控缓冲区进行颜色混合的函数，从而实现了想要的效果。  
-*At the time, I needed to draw textures with transparency, but EasyX itself did not support alpha rendering. I found functions online for color blending by manipulating the buffer, achieving the desired effect.*
+<small>当时我需要绘制带有透明度的贴图，而 EasyX 本身并不支持透明度渲染。我从网上找到了通过操控缓冲区进行颜色混合的函数，从而实现了想要的效果。  
+*At the time, I needed to draw textures with transparency, but EasyX itself did not support alpha rendering. I found functions online for color blending by manipulating the buffer, achieving the desired effect.*</small>
 
-理解这个原理后，我开始尝试各种效果：将图片从暗到亮显式、对图片进行切割等。  
-*After understanding this principle, I began experimenting with various effects: fading images from dark to bright, slicing images, etc.*
+<small>理解这个原理后，我开始尝试各种效果：将图片从暗到亮显式、对图片进行切割等。  
+*After understanding this principle, I began experimenting with various effects: fading images from dark to bright, slicing images, etc.*</small>
 
-手动操控像素带我进入了一个不同的世界。面对已有的函数，我时常思考：**我是否可以做一个更好、更高性能的实现方案？**  
-*Manually manipulating pixels brought me into a different world. Facing existing functions, I often wondered: **Could I create a better, higher-performance implementation?***
+<small>手动操控像素带我进入了一个不同的世界。面对已有的函数，我时常思考：**我是否可以做一个更好、更高性能的实现方案？**  
+*Manually manipulating pixels brought me into a different world. Facing existing functions, I often wondered: **Could I create a better, higher-performance implementation?***</small>
 
-在以游戏为目的、优化绘制效果的过程中，我意识到了软件渲染的瓶颈，也萌生了深入研究 Shader 渲染的想法。  
-*While optimizing drawing effects for game development, I recognized the limitations of software rendering and developed an interest in studying shader rendering.*
+<small>在以游戏为目的、优化绘制效果的过程中，我意识到了软件渲染的瓶颈，也萌生了深入研究 Shader 渲染的想法。  
+*While optimizing drawing effects for game development, I recognized the limitations of software rendering and developed an interest in studying shader rendering.*</small>
 
-但我不忍心放弃研究了几个月的心血，于是决定将原来的游戏项目重构为一个图形库。  
-*However, I couldn't bear to abandon months of research effort, so I decided to refactor the original game project into a graphics library.*
+<small>但我不忍心放弃研究了几个月的心血，于是决定将原来的游戏项目重构为一个图形库。  
+*However, I couldn't bear to abandon months of research effort, so I decided to refactor the original game project into a graphics library.*</small>
 
-PA2D 并非为某个具体目标而设计，只是希望让我的工作更有价值一些。  
-*PA2D wasn't designed for a specific purpose—I simply wanted my work to have more value.*
+<small>PA2D 并非为某个具体目标而设计，只是希望让我的工作更有价值一些。  
+*PA2D wasn't designed for a specific purpose—I simply wanted my work to have more value.*</small>
 
-因此，PA2D 是一个从游戏项目演变为图形库的项目。重构过程中，我注重 API 的便捷性，倾向于提供直接操控缓冲区的接口，并完全暴露图像渲染的全过程。  
-*Thus, PA2D is a project that evolved from a game into a graphics library. During refactoring, I focused on API convenience, preferring to provide direct buffer manipulation interfaces while fully exposing the entire image rendering process.*
+<small>因此，PA2D 是一个从游戏项目演变为图形库的项目。重构过程中，我注重 API 的便捷性，倾向于提供直接操控缓冲区的接口，并完全暴露图像渲染的全过程。  
+*Thus, PA2D is a project that evolved from a game into a graphics library. During refactoring, I focused on API convenience, preferring to provide direct buffer manipulation interfaces while fully exposing the entire image rendering process.*</small>
 
-它的方向可能与其他图形库有所不同，这源于以下几点：  
-*Its direction may differ from other graphics libraries, stemming from the following reasons:*
-
-1. **技术实现自主性** | **Independent Technical Implementation**  
-   由于对 GDI 等传统绘图底层实现不太了解，我选择自己实现 `Color`、`Buffer` 等存储结构。在底层，我只想将 `Buffer` 直接投放到窗口上，展示手动操控像素之美。这样的实现不经意间带来了与具体窗口解耦、离屏渲染、多画布支持、易于扩展等特点。我明白这个库的实现是站在巨人的肩膀上——得益于更快的 CPU、更大的传输带宽、SIMD 技术的支持，以及 AI 的辅助，让我能够快速迭代与测试。  
-   *Due to limited understanding of traditional graphics implementations like GDI, I chose to implement storage structures like `Color` and `Buffer` myself. At the low level, I simply wanted to display the `Buffer` directly onto windows, showcasing the beauty of manual pixel manipulation. This implementation inadvertently enabled features like window decoupling, off-screen rendering, multi-canvas support, and easy extensibility. I understand this library stands on the shoulders of giants—benefiting from faster CPUs, greater bandwidth, SIMD technology, and AI assistance, allowing rapid iteration and testing.*
-
-2. **性能优先的现代设计** | **Performance-First Modern Design**  
-   面对我在配置一般的笔记本电脑上仅能达到 90FPS 的游戏画面，以及多次优化仍无法稳定提升效率的困境，我选择不受向前兼容的约束，尽可能使用较新且应用广泛的 C++ 语法、SIMD 支持等技术，以获取更好的性能。API 设计仍在进行中，可能会持续迭代，目标是让创作更便捷、体验更流畅。  
-   *Facing game visuals that only reached 90FPS on my average laptop and optimization efforts that couldn't consistently improve efficiency, I chose not to be constrained by backward compatibility. Instead, I opted to use newer, widely adopted C++ features, SIMD support, and other technologies for better performance. API design is ongoing and may continue evolving, aiming to make creation easier and experience smoother.*
-
-3. **学习与实践并重** | **Balancing Learning and Practice**  
-   PA2D 涉及现代 C++ 语法、并行优化技术、API 设计哲学等方面。它从工程实践出发，伴随一个初学者逐步优化的学习路径，或许能提供一些独特的学习意义。  
-   *PA2D encompasses modern C++ syntax, parallel optimization techniques, API design philosophy, and more. Starting from engineering practice, it follows a beginner's progressive optimization learning path, potentially offering unique educational value.*
-
-4. **面向特定爱好者** | **Targeting Specific Enthusiasts**  
-   对于一些偏冷门的兴趣爱好者，或许能在 PA2D 中找到共鸣——例如想要设计优雅的 API 语法、使用 SIMD 进行并行优化实践、手动操控像素等。PA2D 也许能为这些实践提供一个平台。  
-   *For enthusiasts with niche interests, PA2D might resonate—such as those wanting to design elegant API syntax, practice parallel optimization with SIMD, or manually manipulate pixels. PA2D could provide a platform for such practices.*
+<small>它的方向可能与其他图形库有所不同，这源于以下几点：  
+*Its direction may differ from other graphics libraries, stemming from the following reasons:*</small>
 
 ---
 
-### 2. PA2D 现在可以做什么？ | What can PA2D currently do?
+<small>**1. 技术实现自主性**  
+*1. Independent Technical Implementation*  
+由于对 GDI 等传统绘图底层实现不太了解，我选择自己实现 `Color`、`Buffer` 等存储结构。在底层，我只想将 `Buffer` 直接投放到窗口上，展示手动操控像素之美。这样的实现不经意间带来了与具体窗口解耦、离屏渲染、多画布支持、易于扩展等特点。我明白这个库的实现是站在巨人的肩膀上——得益于更快的 CPU、更大的传输带宽、SIMD 技术的支持，以及 AI 的辅助，让我能够快速迭代与测试。  
+*Due to limited understanding of traditional graphics implementations like GDI, I chose to implement storage structures like `Color` and `Buffer` myself. At the low level, I simply wanted to display the `Buffer` directly onto windows, showcasing the beauty of manual pixel manipulation. This implementation inadvertently enabled features like window decoupling, off-screen rendering, multi-canvas support, and easy extensibility. I understand this library stands on the shoulders of giants—benefiting from faster CPUs, greater bandwidth, SIMD technology, and AI assistance, allowing rapid iteration and testing.*</small>
 
-目前的这个库，并没有包含它起源游戏的所有功能，比如径向渐变的粒子效果、某些特殊的图案绘制函数等。  
-*The current library doesn't include all features from its originating game, such as radial gradient particle effects or certain specialized pattern drawing functions.*
+<small>**2. 性能优先的现代设计**  
+*2. Performance-First Modern Design*  
+面对我在配置一般的笔记本电脑上仅能达到 90FPS 的游戏画面，以及多次优化仍无法稳定提升效率的困境，我选择不受向前兼容的约束，尽可能使用较新且应用广泛的 C++ 语法、SIMD 支持等技术，以获取更好的性能。API 设计仍在进行中，可能会持续迭代，目标是让创作更便捷、体验更流畅。  
+*Facing game visuals that only reached 90FPS on my average laptop and optimization efforts that couldn't consistently improve efficiency, I chose not to be constrained by backward compatibility. Instead, I opted to use newer, widely adopted C++ features, SIMD support, and other technologies for better performance. API design is ongoing and may continue evolving, aiming to make creation easier and experience smoother.*</small>
 
-因为库正在设计和不断完善中，它提供的是最基础的实现方案，而不是"开箱即用"的成品。  
-*As the library is still being designed and continuously improved, it offers foundational implementations rather than "out-of-the-box" complete solutions.*
+<small>**3. 学习与实践并重**  
+*3. Balancing Learning and Practice*  
+PA2D 涉及现代 C++ 语法、并行优化技术、API 设计哲学等方面。它从工程实践出发，伴随一个初学者逐步优化的学习路径，或许能提供一些独特的学习意义。  
+*PA2D encompasses modern C++ syntax, parallel optimization techniques, API design philosophy, and more. Starting from engineering practice, it follows a beginner's progressive optimization learning path, potentially offering unique educational value.*</small>
 
-当前库直接暴露 `Buffer` 的 `Color*`，鼓励开发者自己去实现更出色的效果。  
-*Currently, the library directly exposes `Buffer`'s `Color*`, encouraging developers to implement more impressive effects themselves.*
-
-我不知道现在是否存在其他完美的库，我只想创造带有我思考痕迹的作品。  
-*I don't know if other perfect libraries exist; I simply want to create work that bears my thought process.*
-
-**技术力决定想象力和创造力，从无到有离不开实践。**  
-***Technical capability determines imagination and creativity; creating from nothing requires practice.***
-
-#### 目前已实现的功能 | Currently Implemented Features:
-
-1. **Window 窗口类** —— 后台线程运行、与渲染逻辑解耦、不抢占主逻辑  
-   ***Window Class** — Runs in background threads, decoupled from rendering logic, non-blocking for main logic*
-
-2. **Canvas 画布类** —— `Buffer` 存储结构与渲染算法函数的代理层，提供友好的链式 API  
-   ***Canvas Class** — Proxy layer for `Buffer` storage structure and rendering algorithm functions, providing friendly chained API*
-
-3. **Shape 几何对象** —— 临时实现的几何变换，旨在为绘图提供便利（我认为其设计还有提升空间）  
-   ***Shape Geometry Object** — Temporarily implemented geometric transformations aimed at facilitating drawing (I believe its design has room for improvement)*
-
-4. **Style 几何样式** —— 因设计 `Shape` 类而考虑将样式参数封装起来，恰巧了解到字面量，这是一个便捷的方案  
-   ***Style Geometry Style** — Considering encapsulation of style parameters due to designing the `Shape` class; coincidentally learned about literals, which provide a convenient solution*
-
-5. **Color、Buffer 等** —— 基础结构，方便用户自行进行分支实验  
-   ***Color, Buffer, etc.** — Fundamental structures allowing users to conduct branching experiments independently*
+<small>**4. 面向特定爱好者**  
+*4. Targeting Specific Enthusiasts*  
+对于一些偏冷门的兴趣爱好者，或许能在 PA2D 中找到共鸣——例如想要设计优雅的 API 语法、使用 SIMD 进行并行优化实践、手动操控像素等。PA2D 也许能为这些实践提供一个平台。  
+*For enthusiasts with niche interests, PA2D might resonate—such as those wanting to design elegant API syntax, practice parallel optimization with SIMD, or manually manipulate pixels. PA2D could provide a platform for such practices.*</small>
 
 ---
 
-### 项目文件结构 | Project File Structure
+## 2. PA2D 现在可以做什么？ | What can PA2D currently do?
 
-目前我将项目简化为以下文件：  
-*Currently, I've simplified the project to the following files:*
+<small>目前的这个库，并没有包含它起源游戏的所有功能，比如径向渐变的粒子效果、某些特殊的图案绘制函数等。  
+*The current library doesn't include all features from its originating game, such as radial gradient particle effects or certain specialized pattern drawing functions.*</small>
 
-| 文件类型 | 说明 | File Type | Description |
-|----------|------|-----------|-------------|
-| `pa2d.h` | 主头文件 | `pa2d.h` | Main header file |
-| `pa2d.lib` | 发布版本库文件 | `pa2d.lib` | Release version library file |
-| `pa2dd.lib` | 调试版本库文件 | `pa2dd.lib` | Debug version library file |
-| `pa2d_install.exe` | 针对 Visual Studio 的安装包 | `pa2d_install.exe` | Installation package for Visual Studio |
+<small>因为库正在设计和不断完善中，它提供的是最基础的实现方案，而不是"开箱即用"的成品。  
+*As the library is still being designed and continuously improved, it offers foundational implementations rather than "out-of-the-box" complete solutions.*</small>
 
-#### 这样简化的原因 | Reasons for This Simplification:
-1. 在项目当前阶段，希望提供最直接的创作方式，而非过早暴露实现细节。  
-   *At the current project stage, we aim to provide the most direct creative approach rather than prematurely exposing implementation details.*
+<small>当前库直接暴露 `Buffer` 的 `Color*`，鼓励开发者自己去实现更出色的效果。  
+*Currently, the library directly exposes `Buffer`'s `Color*`, encouraging developers to implement more impressive effects themselves.*</small>
 
-2. 想要了解最新功能与 API 接口，可直接查看组织好的 `pa2d.h` 以及示例代码。  
-   *To understand the latest features and API interfaces, directly refer to the organized `pa2d.h` and example code.*
+<small>我不知道现在是否存在其他完美的库，我只想创造带有我思考痕迹的作品。  
+*I don't know if other perfect libraries exist; I simply want to create work that bears my thought process.*</small>
 
-3. 目前 API 仍处于快速迭代中，且文件组织方式尚未达到理想状态。  
-   *Currently, the API is still in rapid iteration, and the file organization hasn't reached an ideal state.*
+<small>**技术力决定想象力和创造力，从无到有离不开实践。**  
+***Technical capability determines imagination and creativity; creating from nothing requires practice.***</small>
 
-我会在项目有一定知名度或代码组织完善后进行开源，并提供贡献指南。  
-*I will open-source the project when it gains some recognition or when the code organization is refined, along with providing contribution guidelines.*
+---
+
+### 目前已实现的功能 | Currently Implemented Features:
+
+<small>**1. Window 窗口类**  
+*1. Window Class*  
+后台线程运行、与渲染逻辑解耦、不抢占主逻辑  
+*Runs in background threads, decoupled from rendering logic, non-blocking for main logic*</small>
+
+<small>**2. Canvas 画布类**  
+*2. Canvas Class*  
+`Buffer` 存储结构与渲染算法函数的代理层，提供友好的链式 API  
+*Proxy layer for `Buffer` storage structure and rendering algorithm functions, providing friendly chained API*</small>
+
+<small>**3. Shape 几何对象**  
+*3. Shape Geometry Object*  
+临时实现的几何变换，旨在为绘图提供便利（我认为其设计还有提升空间）  
+*Temporarily implemented geometric transformations aimed at facilitating drawing (I believe its design has room for improvement)*</small>
+
+<small>**4. Style 几何样式**  
+*4. Style Geometry Style*  
+因设计 `Shape` 类而考虑将样式参数封装起来，恰巧了解到字面量，这是一个便捷的方案  
+*Considering encapsulation of style parameters due to designing the `Shape` class; coincidentally learned about literals, which provide a convenient solution*</small>
+
+<small>**5. Color、Buffer 等**  
+*5. Color, Buffer, etc.*  
+基础结构，方便用户自行进行分支实验  
+*Fundamental structures allowing users to conduct branching experiments independently*</small>
+
+---
+
+## 项目文件结构 | Project File Structure
+
+<small>目前我将项目简化为以下文件：  
+*Currently, I've simplified the project to the following files:*</small>
+
+| 文件类型 File Type | 说明 Description |
+|-------------------|-----------------|
+| `pa2d.h` | 主头文件 Main header file |
+| `pa2d.lib` | 发布版本库文件 Release version library file |
+| `pa2dd.lib` | 调试版本库文件 Debug version library file |
+| `pa2d_install.exe` | 针对 Visual Studio 的安装包 Installation package for Visual Studio |
+
+---
+
+### 这样简化的原因 | Reasons for This Simplification:
+
+<small>1. 在项目当前阶段，希望提供最直接的创作方式，而非过早暴露实现细节。  
+*At the current project stage, we aim to provide the most direct creative approach rather than prematurely exposing implementation details.*</small>
+
+<small>2. 想要了解最新功能与 API 接口，可直接查看组织好的 `pa2d.h` 以及示例代码。  
+*To understand the latest features and API interfaces, directly refer to the organized `pa2d.h` and example code.*</small>
+
+<small>3. 目前 API 仍处于快速迭代中，且文件组织方式尚未达到理想状态。  
+*Currently, the API is still in rapid iteration, and the file organization hasn't reached an ideal state.*</small>
+
+<small>我会在项目有一定知名度或代码组织完善后进行开源，并提供贡献指南。  
+*I will open-source the project when it gains some recognition or when the code organization is refined, along with providing contribution guidelines.*</small>
 
 <a id= pa2d---modern-c-2d-graphics-programming-library></a>
 
