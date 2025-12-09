@@ -1,4 +1,4 @@
-# PrismArch PA2D - Proprietary Software License
+# PrismArch 2D - Proprietary Software License
 
 ## Copyright Notice
 Copyright (c) 2025 PrismArch. All rights reserved.
