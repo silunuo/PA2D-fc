@@ -26,6 +26,7 @@
 //   - Compile with /arch:AVX2
 // ======================================================================
 #include <vector>
+#include <array> 
 #include <cstdint>
 #include <string>
 #include <functional>
@@ -212,10 +213,10 @@ namespace pa2d {
         Window& operator=(Window&&);
         ~Window();
         // ==================== PUBLIC MEMBERS ====================olm <
-        HWND hwnd_ = nullptr;
-        int width_ = 0;
-        int height_ = 0;
-        bool isClosed_ = false;
+        HWND hwnd = nullptr;
+        int width = 0;
+        int height = 0;
+        bool isClosed = false;
         // ==================== WINDOW STATE ====================
         bool isOpen() const;
         bool isVisible() const;
@@ -402,9 +403,7 @@ namespace pa2d {
     virtual BoundingBox getBoundingBox() const PureVirtual; \
     virtual Point getCenter() const PureVirtual;
 #define TO_POINTS() \
-    operator std::vector<Point>()&; \
-    operator std::vector<Point>() const&; \
-    operator std::vector<Point>()&&;
+
     class Shape {
     public:
         enum class GeometryType { POINTS, LINE, POLYGON, RECT, TRIANGLE, CIRCLE, ELLIPTIC, SECTOR, RAY };
@@ -413,17 +412,19 @@ namespace pa2d {
     private:
         GeometryType type = GeometryType::POINTS;
     };
-    class Points : public Shape, public std::vector<Point> {
-    public:
+    struct Points : public Shape{
+        std::vector<Point> points;
         Points();Points(int size);
         Points(const std::vector<Point>& points);
         Points(std::vector<Point>&& points);
         Points& operator=(const std::vector<Point>& points);
         Points& operator=(std::vector<Point>&& points);
         SHAPE_API(Points, override)
+        operator std::vector<Point>() const;
+        operator const std::vector<Point>& () const;
     };
     class Line : public Shape {
-        Points points_;
+        Point start_, end_;
     public:
         Line();Line(float x0, float y0, float x1, float y1);
         Line(const Point& start, const Point& end);
@@ -432,23 +433,24 @@ namespace pa2d {
         Point& start();                Point start() const;
         Point& end();                  Point end() const;
         SHAPE_API(Line, override)
-        TO_POINTS()
+        operator std::vector<Point>() const;
     };
     class Polygon : public Shape {
         Points points_;
     public:
         Polygon();Polygon(const std::vector<Point>& points);
         Polygon(std::vector<Point>&& points);
-        Points& getPoints();    const Points& getPoints() const;
+        std::vector<Point>& getPoints();    const std::vector<Point>& getPoints() const;
         Polygon& operator=(const std::vector<Point>& vec);
         Polygon& operator=(std::vector<Point>&& points);
-        SHAPE_API(Polygon, override)
-        TO_POINTS()
+        operator std::vector<Point>() const;
+        operator const std::vector<Point>& () const;
     };
     class Rect : public Shape {
-        Points points_;
         Point center_;
-        float width_,height_,rotation_,verticesDirty_;
+        float width_, height_, rotation_;
+        mutable std::array<Point, 4> cachedVertices_;
+        mutable bool verticesDirty_;
     public:
         Rect();Rect(float centerX, float centerY, float width, float height, float rotation = 0.0f);
         Rect(const std::vector<Point>& points);
@@ -456,17 +458,17 @@ namespace pa2d {
         Rect& width(float width);           float width() const;
         Rect& height(float height);         float height() const;
         Rect& rotation(float rotation);     float rotation() const;
-        Point& center();                    Point center() const;
+        Point center() const;
         auto begin();   auto begin() const;
         auto end();     auto end() const;
         Rect& operator=(const std::vector<Point>& points);
         Point& operator[](size_t index);
         const Point& operator[](size_t index) const;
         SHAPE_API(Rect, override)
-        TO_POINTS()
+        operator std::vector<Point>() const;
     };
     class Triangle : public Shape {
-        Points points_;
+        std::array<Point, 3> vertices_;
     public:
         Triangle();Triangle(const Point& p0, const Point& p1, const Point& p2);
         Triangle(float px0, float py0, float px1, float py1, float px2, float py2);
@@ -477,7 +479,7 @@ namespace pa2d {
         Point& operator[](size_t index);
         const Point& operator[](size_t index) const;
         SHAPE_API(Triangle, override)
-        TO_POINTS()
+        operator std::vector<Point>() const;
     };
     class Elliptic : public Shape {
         Point center_;
@@ -492,9 +494,7 @@ namespace pa2d {
         Elliptic& rotation(float rotation);     float rotation() const;
         Point& center();                        Point center() const;
         SHAPE_API(Elliptic, override)
-        TO_POINTS()
-        operator Point()&;
-        operator Point() const&;
+        operator Point() const;
     };
     class Circle : public Shape {
         Point center_;
@@ -508,9 +508,7 @@ namespace pa2d {
         Circle& radius(float radius);           float radius() const;
         Point& center();                        Point center() const;
         SHAPE_API(Circle, override)
-        TO_POINTS()
-        operator Point()&;
-        operator Point() const&;
+        operator Point() const;
     };
     class Sector : public Shape {
         Point center_;
@@ -526,12 +524,10 @@ namespace pa2d {
         Sector& endAngle(float endAngle);       float endAngle() const;
         Point& center();                        Point center() const;
         SHAPE_API(Sector, override)
-        TO_POINTS()
-        operator Point()&;
-        operator Point() const&;
+        operator Point() const;
     };
     class Ray : public Shape {
-        Points points_;
+        Point start_, end_;
         float length_,angle_;
     public:
         Ray();Ray(float x1, float y1, float x2, float y2);
@@ -547,7 +543,7 @@ namespace pa2d {
         Ray& stretch(float factor);
         Ray& spin(float degrees);
         SHAPE_API(Ray, override)
-        TO_POINTS()
+        operator std::vector<Point>() const;
     };
 #undef SHAPE_API
 #undef TO_POINTS
