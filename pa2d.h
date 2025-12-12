@@ -139,13 +139,14 @@ namespace pa2d {
         draw(Rect)draw(Triangle)draw(Polygon)
         draw(Circle)draw(Elliptic)draw(Sector)
 #undef draw
+        Canvas& blend(const Canvas& other, int x = 0, int y = 0, int alpha = 255, int Mode = 0);
         // ==================== IMAGE BLENDING ====================
 #define blend(Mode) Canvas& Mode##Blend(const Canvas& src, int dstX = 0, int dstY = 0, int alpha = 255);
         blend(copy)blend(alpha)blend(add)blend(multiply)
         blend(screen)blend(overlay)blend(destAlpha)
 #undef blend
         // ==================== IMAGE TRANSFORM DRAWING ====================
-        Canvas& draw(const Canvas& other, int x = 0, int y = 0, int alpha = 255);
+        Canvas& draw(const Canvas& src, float centerX, float centerY, int alpha);
         Canvas& drawRotated(const Canvas& src, float centerX, float centerY, float rotation = 0.0f);
         Canvas& drawScaled(const Canvas& src, float centerX, float centerY, float scaleX, float scaleY);
         Canvas& drawScaled(const Canvas& src, float centerX, float centerY, float scale = 1.0f);
@@ -194,21 +195,23 @@ namespace pa2d {
     using MenuCallback = std::function<void(int)>;
     using FileListCallback = std::function<void(const std::vector<std::string>&)>;
     // ============= WINDOWS HANDLE TYPES =============
-    // These are defined as void* to avoid conflicts with windows.h
-    using HWND = void*;
-    using HMENU = void*;
-    using HICON = void*;
-    using HCURSOR = void*;
-    using COLORREF = unsigned long;
     class Window {
     public:
+        // These are defined as void* to avoid conflicts with windows.h
+        using HWND = void*;
+        using HMENU = void*;
+        using HICON = void*;
+        using HCURSOR = void*;
+        using COLORREF = unsigned long;
+        // ==================== CONSTRUCTION & DESTRUCTION ====================
+        // Window objects support both copy and move semantics for flexible window management.
         Window(int width=-1, int height=-1, const char* title="PA2D Window");
         Window(const Window&);
         Window(Window&&);
         Window& operator=(const Window&);
         Window& operator=(Window&&);
         ~Window();
-        // ==================== PUBLIC MEMBERS ====================
+        // ==================== PUBLIC MEMBERS ====================olm <
         HWND hwnd_ = nullptr;
         int width_ = 0;
         int height_ = 0;
