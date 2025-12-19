@@ -1,40 +1,116 @@
-#include "pa2d.h"
+// PA2D 多窗口与键盘交互示例
+// 版本：1.0.0.beta1 配套示例
+// 
+// 功能说明：
+// 1. 演示多窗口的创建和管理
+// 2. 展示键盘事件处理
+// 3. 演示窗口状态控制（显示/隐藏/焦点）
+// 4. 展示不同画布内容的独立渲染
+// 5. 实现简单的窗口切换逻辑
+
+#include <pa2d.h>
+#include <windows.h>
 using namespace pa2d;
 
-Window w_1(600, 400, "Circle Window");
-Window w_2(600, 400, "Rectangle Window");
+// 全局窗口对象（多窗口示例）
+Window w_1(600, 400, "圆形窗口 - Circle Window");
+Window w_2(600, 400, "矩形窗口 - Rectangle Window");
 
-void keyEvent(KeyEvent key) {
-    if (key.keyCode == 32 && key.pressed) {  // Space bar to toggle windows
-        if (w_1.isVisible()) w_1.hide();
-        else w_1.show().focus();
-        
-        if (w_2.isVisible()) w_2.hide();
-        else w_2.show().focus();
+// ==================== 键盘事件回调函数 ====================
+// 按键处理：空格键切换两个窗口的显示状态
+void keyEvent(const KeyEvent& key) {
+    // 检测空格键按下事件（keyCode 32 = VK_SPACE）
+    if (key.keyCode == 32 && key.pressed) {
+        // 切换窗口1的显示状态
+        if (w_1.isVisible()) {
+            w_1.hide();  // 如果可见则隐藏
+        }
+        else {
+            w_1.show().focus();  // 如果隐藏则显示并获取焦点
+        }
+
+        // 切换窗口2的显示状态
+        if (w_2.isVisible()) {
+            w_2.hide();
+        }
+        else {
+            w_2.show().focus();
+        }
     }
 }
 
 int main() {
+    // ==================== 画布初始化 ====================
+    // 创建两个画布，分别用于两个窗口
     Canvas canvas1(600, 400), canvas2(600, 400);
 
-    // Initialize canvas content
-    canvas1.clear(Black)
-        .circle(200, 200, 50, None, Red, 5)
-        .textCentered(L"Press SPACE to toggle", 300, 300, White, 16);
-    canvas2.clear(White)
-        .rect(100, 100, 200, 100, None, Blue, 5)
-        .textCentered(L"Press SPACE to toggle", 300, 300, Black, 16);
+    // 初始化画布1内容（黑色背景，红色圆形）
+    canvas1.clear(Black)  // 黑色背景
+        .circle(200, 200, 50, Red_stroke + 5_w)  // 红色描边圆形，5像素线宽
+        .textCentered(L"按空格键切换窗口", 300, 300, White, 16)  // 中文提示
+        .textCentered(L"Press SPACE to toggle", 300, 330, White, 14);  // 英文提示
 
-    // Window setup
-    w_1.setPosition(100, 100).onKey(keyEvent).show().focus();
-    w_2.setPosition(750, 100).onKey(keyEvent);
+    // 初始化画布2内容（白色背景，蓝色矩形）
+    canvas2.clear(White)  // 白色背景
+        .rect(100, 100, 200, 100, Blue_stroke + 5_w)  // 蓝色描边矩形，5像素线宽
+        .textCentered(L"按空格键切换窗口", 300, 300, Black, 16)  // 中文提示
+        .textCentered(L"Press SPACE to toggle", 300, 330, Black, 14);  // 英文提示
 
-    // Main loop
+    // ==================== 窗口配置 ====================
+    // 窗口1：左上区域，注册键盘事件，显示并获取焦点
+    w_1.setPosition(100, 100)   // 屏幕位置 (100, 100)
+        .onKey(keyEvent)         // 注册键盘事件回调
+        .show()                  // 显示窗口
+        .focus();                // 获取输入焦点
+
+    // 窗口2：右上区域，注册键盘事件（初始隐藏）
+    w_2.setPosition(750, 100)   // 屏幕位置 (750, 100)，避免与窗口1重叠
+        .onKey(keyEvent);        // 注册键盘事件
+
+    // ==================== 主渲染循环 ====================
+    // 持续运行，直到任一窗口被关闭
     while (w_1.isOpen() && w_2.isOpen()) {
-        if (w_1.isVisible()) w_1.render(canvas1);
-        if (w_2.isVisible()) w_2.render(canvas2);
-        Sleep(16);  // ~60 FPS
+        // 仅当窗口可见时才渲染（优化性能）
+        if (w_1.isVisible()) {
+            w_1.render(canvas1);  // 渲染画布1到窗口1
+        }
+
+        if (w_2.isVisible()) {
+            w_2.render(canvas2);  // 渲染画布2到窗口2
+        }
+
+        Sleep(16);  // 控制帧率 ≈ 60 FPS（1000ms/16ms ≈ 62.5帧）
     }
 
     return 0;
 }
+
+// 示例说明：
+// 1. 多窗口管理：
+//    - PA2D支持创建多个独立窗口
+//    - 每个窗口有自己的事件循环和渲染上下文
+//    - 窗口可以独立控制位置、大小、可见性
+//
+// 2. 事件处理：
+//    - 使用onKey()注册键盘事件回调
+//    - KeyEvent结构包含：keyCode(按键代码), pressed(按下/释放状态)
+//    - 同一回调可以注册到多个窗口
+//
+// 3. 窗口状态控制：
+//    - show()/hide()：控制窗口可见性
+//    - focus()：将输入焦点切换到指定窗口
+//    - isVisible()：查询窗口当前是否可见
+//    - isOpen()：查询窗口是否仍处于打开状态
+//
+// 4. 性能优化：
+//    - 仅对可见窗口进行渲染，减少不必要的GPU负载
+//    - 使用Sleep()控制主循环频率，避免CPU占用过高
+//
+// 5. 使用技巧：
+//    - 窗口坐标：屏幕左上角为(0,0)，向右为+X，向下为+Y
+//    - 多窗口布局：注意窗口位置不要重叠，避免视觉混淆
+//    - 事件响应：确保回调函数处理迅速，避免阻塞渲染
+//
+// 注意事项：
+// 1. 多窗口应用中，建议为每个窗口设置不同的标题以便区分
+// 2. 实际应用中可能需要更复杂的事件分发机制
