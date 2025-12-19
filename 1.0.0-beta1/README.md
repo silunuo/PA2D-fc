@@ -181,14 +181,17 @@ PA2D的工作量实在太大，我目前还未做退回版本
 
 #### 2. 运行安装向导
 <img width="640" height="480" alt="QQ_1766147865981" src="https://github.com/user-attachments/assets/99000044-5381-4e22-9e91-425c1d1f055b" />  
+  
 *图：安装程序欢迎界面*  
 
 #### 3. 自动检测Visual Studio
 <img width="640" height="480" alt="QQ_1766147903306" src="https://github.com/user-attachments/assets/5e2750fd-def1-4611-962b-9c06033a61f0" />  
+  
 *图：自动检测已安装的Visual Studio版本*  
 
 #### 4. 安装进指定目录
 <img width="640" height="480" alt="QQ_1766147920349" src="https://github.com/user-attachments/assets/72db1af4-3c7e-4dc8-b6e3-ebb618d29828" />  
+  
 *图：安装完成后，PA2D的安装位置*  
 
 #### 5. 在Visual Studio中使用
