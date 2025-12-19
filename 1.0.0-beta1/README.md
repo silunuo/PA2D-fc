@@ -18,7 +18,7 @@ using namepsace pa2d;
 int main(){
   // 创建一个 640*480 的窗口
   Window window(640, 480，"My first PA2D Window");
-  // 显式这个窗口
+  // 显示这个窗口
   window.show();
   // 等待窗口关闭
   window.waitForClose();
@@ -46,6 +46,7 @@ int main() {
     // 显式初始窗口
     window.show()
         .setPosition(100, 100);
+
     // 拷贝构造(复制所有窗口状态)
     Window clonedWindow = window;  
 
@@ -53,7 +54,6 @@ int main() {
         .setPosition(800, 100)
         .setTitle("Cloned Window");
 
-    // 等待原始窗口关闭
     window.waitForClose();
 }
 ```
@@ -65,18 +65,21 @@ int main() {
 #### 绘制一个圆
 ```cpp
 #include<pa2d.h>
-// 创建一个 640*480 的窗口
 using namespace pa2d;
-Window window(640, 480, "My first PA2D Window");
 int main() {
+	Window window(640, 480, "My first PA2D Window");
 	window.show();
-	// 创建一个画布
+
+	// 1. 创建一个画布
 	Canvas canvas(640, 480);
-	// 在画布上画一个圆
+
+	// 2. 在画布上画一个圆
 	canvas.circle(100, 100, 60, Green_fill + Red_stroke);
-	// 让窗口去渲染画布
+
+	// 3. 让窗口去渲染画布
 	window.render(canvas)
-		.waitForClose();
+
+	window.waitForClose();
 }
 ```  
 <img width="640" height="480" alt="QQ_1766145245946" src="https://github.com/user-attachments/assets/5334ceda-f323-45ea-bf28-594636179fe6" />
