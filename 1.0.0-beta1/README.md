@@ -5,22 +5,21 @@
 
   
 ## 如何使用这个库
-对Visual Studio安装十分友好，有自动化安装程序
-[📦 快速安装](#installation)
+对Visual Studio安装十分友好，有自动化安装程序  
+📦 快速安装：[点击跳转](#installation)
 
 ###  **Step 1** : 使用Window类管理窗口
 引入头文件后，尝试创建一个窗口  
 ```cpp
 #include<pa2d.h>
+// 使用pa2d 命名空间
 using namepsace pa2d;
 // 创建一个 640*480 的窗口
 Window window(640, 480，"My first PA2D Window");
-```
-事实上，初次创建窗口并不会立即显示，因为初始化并不代表着显示  
 
-让我们在main函数中，调用窗口的`show()`方法  
-```cpp
 int main(){
+  // 事实上，初次创建窗口并不会立即显示，因为初始化并不代表着显示
+  // 我们需要调用窗口的show()方法显式窗口
   window.show();
   // 我提供了 waitForClose() 方法方便展示窗口
   // 防止程序立即退出
@@ -31,13 +30,9 @@ int main(){
 运行后，我们就会获得以下的窗口    
 <img width="640" height="480" alt="QQ_1766144139681" src="https://github.com/user-attachments/assets/ef4dcf9e-82d8-46b6-a809-be4d50f531a5" />
   
-事实上，我们可以通过Window对象，去查找相关的方法  
-
-<img width="250" height="260" alt="QQ_1766144296586" src="https://github.com/user-attachments/assets/9e4b38af-9adc-4ffc-8adb-858d27738de3" />
-  
-PA2D库大部分常用方法都在对象的方法里，很方便用户平时预览  
-
-你或许会探索到一些有趣的功能  
+PA2D 大部分常用方法都在对象的方法里，很方便用户平时预览  
+PA2D 是基于面向对象的  
+你或许会在使用过程中探索到一些有趣的功能  
 例如：让我们"**克隆**"一个窗口  
 
 ```cpp
