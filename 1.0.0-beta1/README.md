@@ -26,11 +26,11 @@ int main(){
 ```
 
 运行后，我们就会获得以下的窗口    
-<img width="800" height="450" alt="QQ_1766144139681" src="https://github.com/user-attachments/assets/ef4dcf9e-82d8-46b6-a809-be4d50f531a5" />
+<img width="640" height="480" alt="QQ_1766144139681" src="https://github.com/user-attachments/assets/ef4dcf9e-82d8-46b6-a809-be4d50f531a5" />
   
 事实上，我们可以通过Window对象，去查找相关的方法  
 
-<img width="150" height="160" alt="QQ_1766144296586" src="https://github.com/user-attachments/assets/9e4b38af-9adc-4ffc-8adb-858d27738de3" />
+<img width="250" height="260" alt="QQ_1766144296586" src="https://github.com/user-attachments/assets/9e4b38af-9adc-4ffc-8adb-858d27738de3" />
   
 PA2D库大部分常用方法都在对象的方法里，很方便用户平时预览  
 
@@ -49,7 +49,7 @@ int main() {
 }
 ```
 会获得以下效果  
-<img width="800" height="600" alt="QQ_1766144410375" src="https://github.com/user-attachments/assets/0a267838-d7c9-4817-85ea-66e4ebbed999" />
+<img width="640" height="480"alt="QQ_1766144410375" src="https://github.com/user-attachments/assets/0a267838-d7c9-4817-85ea-66e4ebbed999" />
 
 ###  Step 2: 尝试用PA2D来绘画
 PA2D 的框架会方便你做出许多有趣的效果  
@@ -71,7 +71,7 @@ int main() {
 		.waitForClose();
 }
 ```  
-<img width="800" height="450" alt="QQ_1766145245946" src="https://github.com/user-attachments/assets/5334ceda-f323-45ea-bf28-594636179fe6" />
+<img width="640" height="480" alt="QQ_1766145245946" src="https://github.com/user-attachments/assets/5334ceda-f323-45ea-bf28-594636179fe6" />
   
 我理解这里会出现一些"**黑魔法**"的语法  
 但我希望用户会喜欢这些方便灵活的语法  
@@ -98,7 +98,7 @@ PA2D默认支持透明度和抗锯齿，颜色使用"ARGB"
 	canvas.circle(100, 100, 60, style + 2_w) // 不同宽度
 		.rect(100, 100, 120, 80, style + 4_w);
 ```
-<img width="800" height="450" alt="QQ_1766146318998" src="https://github.com/user-attachments/assets/a35bd2f2-5255-4912-9609-c69100ca82cd" />
+<img width="640" height="480" alt="QQ_1766146318998" src="https://github.com/user-attachments/assets/a35bd2f2-5255-4912-9609-c69100ca82cd" />
 
 我相信这种语法会在处理多个画布和窗口对象时  
 会让代码非常清晰和结构化  
@@ -196,7 +196,7 @@ using namespace pa2d;
 #### 有经验的用户可选择github仓库下载库文件手动安装
 
 #### 提供了卸载方式
-<img width="1172" height="556" alt="QQ_1766148349939" src="https://github.com/user-attachments/assets/eed86699-3061-4966-90b3-109710c1e667" />
+<img width="640" height="350" alt="QQ_1766148349939" src="https://github.com/user-attachments/assets/eed86699-3061-4966-90b3-109710c1e667" />
 
 ---
 
