@@ -260,17 +260,17 @@ namespace pa2d {
     };
     class Ray : public Shape {
         Point start_, end_;
-        float length_, angle_;
     public:
-        Ray(); Ray(float x1, float y1, float x2, float y2);
+        Ray();
+        Ray(float x1, float y1, float x2, float y2);
         Ray(const Point& start, const Point& end);
         Ray(const Point& start, float length = 0.0f, float angle = 0.0f);
-        Ray& start(float x, float y);   Ray& start(const Point& start);
-        Ray& end(float x, float y);     Ray& end(const Point& end);
-        Point& start();                 Point start() const;
-        Point& end();                   Point end() const;
-        Ray& angle(float angle);        float angle() const;
-        Ray& length(float length);      float length() const;
+        Ray& start(float x, float y);           Ray& start(const Point& start);
+        Ray& end(float x, float y);             Ray& end(const Point& end);
+        Ray& angle(float angle);                float angle() const;
+        Ray& length(float length);              float length() const;
+        Point start() const;
+        Point end() const;
         Ray& toEnd();
         Ray& stretch(float factor);
         Ray& spin(float angle);
