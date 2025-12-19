@@ -17,7 +17,7 @@
 using namespace pa2d;
 int main() {
 	// 创建一个 640*480 的窗口
-	Window window(640, 480,"My first PA2D Window");
+	Window window(640, 480, "My first PA2D Window");
 	// 显示这个窗口
 	window.show();
 	// 等待窗口关闭
