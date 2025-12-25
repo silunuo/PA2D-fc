@@ -404,7 +404,7 @@ namespace pa2d {
     //       Windows use explicit rendering - call render() after show() and for content updates
     //       Resize may clip content - listen to onResize event and re-render accordingly
     struct KeyEvent {
-        int keyCode;
+        int key;
         bool pressed;
     };
     struct MouseEvent {
