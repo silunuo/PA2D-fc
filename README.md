@@ -36,6 +36,7 @@ int main(){
   window.show()
     .render(canvas)
     .waitForClose();
+}
 ```
   
 本项目采用MIT许可
