@@ -34,8 +34,9 @@ int main() {
         // 每5个刻度（小时位置）添加数字
         if (i % 5 == 0) {
             auto pos = mark.stretch(3).end();  // 拉伸刻度获取数字位置
-            background.textCentered(std::to_string(i / 5),  // 小时数字（1-12）
-                pos.x, pos.y,
+            background.textCentered(pos.x, pos.y,
+                std::to_string(i / 5),  // 小时数字（1-12）
+                16,
                 0xff3c3c64);             // 深蓝色文字
         }
     }
@@ -45,8 +46,7 @@ int main() {
         None_fill + 0xff5a5a5a_stroke + 4_w);
 
     // 添加标题
-    background.textCentered("PA2D Clock", ClockX, 50,
-        0xff505078, 20, "Microsoft YaHei", FontStyle::Bold);
+    background.textCentered(ClockX, 50, "PA2D Clock", 20, 0xff505078, FontStyle::Bold);
 
     // ==================== 主循环（实时动画） ====================
     window.show();  // 显示窗口
@@ -81,8 +81,8 @@ int main() {
                 .draw(Ray(hand).stretch(1.4).spin(m_angle), "#ff505050"_stroke + 5_w)  // 分针
                 .draw(Ray(hand).stretch(1.7).spin(s_angle), "#ffdc0000"_stroke + 2_w)  // 秒针（红色）
                 .circle(ClockX, ClockY, 4, White_fill + 0xff1e1e1e_stroke + 4.5_w)  // 中心点
-                .textCentered(timeStr, ClockX, ClockY + Radius + 30,  // 底部时间显示
-                    0xff505078, 20);
+                .textCentered(ClockX, ClockY + Radius + 30, timeStr,   // 底部时间显示
+                    20, 0xff505078);
         }
 
         // 渲染到窗口（居中显示）
