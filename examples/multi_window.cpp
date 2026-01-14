@@ -18,9 +18,9 @@ Window w_2(600, 400, "矩形窗口 - Rectangle Window");
 
 // ==================== 键盘事件回调函数 ====================
 // 按键处理：空格键切换两个窗口的显示状态
-void keyEvent(const KeyEvent& key) {
-    // 检测空格键按下事件（keyCode 32 = VK_SPACE）
-    if (key.keyCode == 32 && key.pressed) {
+void keyEvent(const KeyEvent& e) {
+    // 检测空格键按下事件（32 = VK_SPACE）
+    if (e.key == 32 && e.pressed) {
         // 切换窗口1的显示状态
         if (w_1.isVisible()) {
             w_1.hide();  // 如果可见则隐藏
@@ -47,14 +47,14 @@ int main() {
     // 初始化画布1内容（黑色背景，红色圆形）
     canvas1.clear(Black)  // 黑色背景
         .circle(200, 200, 50, Red_stroke + 5_w)  // 红色描边圆形，5像素线宽
-        .textCentered(L"按空格键切换窗口", 300, 300, White, 16)  // 中文提示
-        .textCentered(L"Press SPACE to toggle", 300, 330, White, 14);  // 英文提示
+        .textCentered(300, 300, L"按空格键切换窗口", 16, White)  // 中文提示
+        .textCentered(300, 330, L"Press SPACE to toggle", 14, White);  // 英文提示
 
     // 初始化画布2内容（白色背景，蓝色矩形）
     canvas2.clear(White)  // 白色背景
         .rect(100, 100, 200, 100, Blue_stroke + 5_w)  // 蓝色描边矩形，5像素线宽
-        .textCentered(L"按空格键切换窗口", 300, 300, Black, 16)  // 中文提示
-        .textCentered(L"Press SPACE to toggle", 300, 330, Black, 14);  // 英文提示
+        .textCentered(300, 300, L"按空格键切换窗口", 16, Black)  // 中文提示
+        .textCentered(300, 330, L"Press SPACE to toggle", 14, Black);  // 英文提示
 
     // ==================== 窗口配置 ====================
     // 窗口1：左上区域，注册键盘事件，显示并获取焦点
