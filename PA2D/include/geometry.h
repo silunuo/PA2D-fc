@@ -1,0 +1,13 @@
+#pragma once
+#include "geometry/shape.h"
+#include "geometry/point.h"
+#include "geometry/points.h"
+#include "geometry/line.h"
+#include "geometry/polygon.h"
+#include "geometry/rect.h"
+#include "geometry/triangle.h"
+#include "geometry/circle.h"
+#include "geometry/ellipse.h"
+#include "geometry/sector.h"
+#include "geometry/ray.h"
+#include "geometry/path.h"
