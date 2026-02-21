@@ -322,7 +322,7 @@ void boxBlur(Buffer& buf, int radius, const FilterRect& region) {
 
     // 水平卷积：buf → tmp
     Buffer tmp(buf.width, buf.height);
-    copyRegion(buf, tmp, rc);    // 把区域外像素也拷过来避免边界颜色错乱
+    copyRegion(buf, tmp, rc);    // convolveH 会覆盖 rc 内所有像素，rc 外保持黑色不影响结果
     convolveH(buf, tmp, kernel, rc);
 
     // 垂直卷积：tmp → buf
