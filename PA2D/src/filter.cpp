@@ -19,6 +19,7 @@ namespace pa2d {
 
 namespace {
 
+// 将 FilterRect 解析为实际像素坐标，并裁剪到 buf 范围内
 struct Rect4 { int x0, y0, x1, y1; }; // [x0,x1) × [y0,y1)
 
 Rect4 resolveRect(const Buffer& buf, const FilterRect& r) {
@@ -125,7 +126,7 @@ void copyRegion(const Buffer& src, Buffer& dst, const Rect4& rc) {
 PA2D_FORCEINLINE float luminance(const Color& c) {
     return c.r * 0.299f + c.g * 0.587f + c.b * 0.114f;
 }
-
+// RGB → HSV（h: 0~360, s/v: 0~1）
 void rgbToHSV(float r, float g, float b,
               float& h, float& s, float& v) {
     r /= 255.f; g /= 255.f; b /= 255.f;
@@ -140,8 +141,8 @@ void rgbToHSV(float r, float g, float b,
     else              h = 60.f * ((r - g) / delta + 4.f);
     if (h < 0.f) h += 360.f;
 }
-
-void hsvTo(float h, float s, float v,
+// HSV → RGB（输出 0~255）
+void hsvToRGB(float h, float s, float v,
               float& r, float& g, float& b) {
     if (s < 1e-6f) { r = g = b = v * 255.f; return; }
     float sector = h / 60.f;
@@ -163,10 +164,11 @@ void hsvTo(float h, float s, float v,
 
 } 
 
-
+// filter 命名空间实现
 namespace filter {
 
-
+// 灰度化
+// 公式：gray = 0.299R + 0.587G + 0.114B（ITU-R BT.601）
 void grayscale(Buffer& buf, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -178,7 +180,8 @@ void grayscale(Buffer& buf, const FilterRect& region) {
     }
 }
 
-
+// 反色
+// 对每个通道取 255 - v；alpha 不变
 void invert(Buffer& buf, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -191,7 +194,8 @@ void invert(Buffer& buf, const FilterRect& region) {
     }
 }
 
-
+// 亮度调节
+// 新值 = 原值 * factor
 void brightness(Buffer& buf, float factor, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -204,7 +208,8 @@ void brightness(Buffer& buf, float factor, const FilterRect& region) {
     }
 }
 
-
+// 对比度调节
+// 以 128 为中心：新值 = (原值 - 128) * factor + 128
 void contrast(Buffer& buf, float factor, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -217,7 +222,8 @@ void contrast(Buffer& buf, float factor, const FilterRect& region) {
     }
 }
 
-
+// 饱和度调节
+// 在 HSV 空间调整 S 分量
 void saturation(Buffer& buf, float factor, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -235,7 +241,8 @@ void saturation(Buffer& buf, float factor, const FilterRect& region) {
     }
 }
 
-
+// 色相旋转
+// 在 HSV 空间把 H 加上 angle 度
 void hueRotate(Buffer& buf, float angle, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -254,7 +261,8 @@ void hueRotate(Buffer& buf, float angle, const FilterRect& region) {
     }
 }
 
-
+// 颜色叠加
+// 新值 = 原值 * (1 - intensity) + 目标颜色 * intensity
 void colorTint(Buffer& buf, const Color& tint, float intensity,
                const FilterRect& region) {
     auto   rc = resolveRect(buf, region);
@@ -269,7 +277,8 @@ void colorTint(Buffer& buf, const Color& tint, float intensity,
     }
 }
 
-
+// 怀旧滤镜
+// 先灰度化，再用怀旧色调矩阵叠加
 void sepia(Buffer& buf, float intensity, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -288,7 +297,7 @@ void sepia(Buffer& buf, float intensity, const FilterRect& region) {
     }
 }
 
-
+// Alpha 透明度调节
 void opacity(Buffer& buf, float factor, const FilterRect& region) {
     auto rc = resolveRect(buf, region);
     for (int y = rc.y0; y < rc.y1; ++y) {
@@ -299,7 +308,9 @@ void opacity(Buffer& buf, float factor, const FilterRect& region) {
     }
 }
 
-
+// 盒式模糊
+// 使用两次可分离的一维均值卷积（水平 + 垂直），
+// 速度比二维卷积快 O(radius) 倍
 void boxBlur(Buffer& buf, int radius, const FilterRect& region) {
     if (radius <= 0) return;
     auto rc = resolveRect(buf, region);
@@ -318,7 +329,8 @@ void boxBlur(Buffer& buf, int radius, const FilterRect& region) {
     convolveV(tmp, buf, kernel, rc);
 }
 
-
+// 高斯模糊
+// 可分离高斯核，质量高于盒式模糊
 void gaussianBlur(Buffer& buf, float sigma, const FilterRect& region) {
     if (sigma <= 0.f) return;
     auto  rc     = resolveRect(buf, region);
@@ -330,7 +342,8 @@ void gaussianBlur(Buffer& buf, float sigma, const FilterRect& region) {
     convolveV(tmp, buf, kernel, rc);
 }
 
-
+// 径向模糊
+// 沿以 (cx,cy) 为圆心的方向进行采样累加
 void radialBlur(Buffer& buf, float strength, int cx, int cy,
                 const FilterRect& region) {
     auto rc = resolveRect(buf, region);
@@ -363,7 +376,8 @@ void radialBlur(Buffer& buf, float strength, int cx, int cy,
     }
 }
 
-
+// 锐化（Unsharp Mask）
+// 原图 + strength × (原图 - 高斯模糊版)
 void sharpen(Buffer& buf, float strength, const FilterRect& region) {
     auto  rc     = resolveRect(buf, region);
     Buffer blurred = buf;
@@ -382,7 +396,8 @@ void sharpen(Buffer& buf, float strength, const FilterRect& region) {
     }
 }
 
-
+// 边缘检测（Sobel 算子）
+// 计算水平/垂直梯度的模，结果为灰度图
 void edgeDetect(Buffer& buf, const FilterRect& region) {
     auto   rc  = resolveRect(buf, region);
     Buffer src = buf; // 备份原图
@@ -413,7 +428,8 @@ void edgeDetect(Buffer& buf, const FilterRect& region) {
     }
 }
 
-
+// 浮雕效果
+// 从 angle 方向的相邻像素差值 + 128 作为灰度输出
 void emboss(Buffer& buf, float angle, float strength,
             const FilterRect& region) {
     auto   rc    = resolveRect(buf, region);
@@ -439,7 +455,11 @@ void emboss(Buffer& buf, float angle, float strength,
     }
 }
 
-
+// 发光效果
+// 算法：
+//   1. 提取超过 threshold 亮度的像素 → 亮斑层
+//   2. 对亮斑层进行高斯模糊
+//   3. 将模糊后的亮斑叠加回原图（加法混合）
 void bloom(Buffer& buf, float threshold, int radius, float intensity,
            const FilterRect& region) {
     auto  rc    = resolveRect(buf, region);
@@ -479,7 +499,9 @@ void bloom(Buffer& buf, float threshold, int radius, float intensity,
     }
 }
 
-
+// 晕影
+// 以图像中心为圆心，边缘越远越暗
+// 使用平滑 smoothstep 过渡避免硬边
 void vignette(Buffer& buf, float strength, float innerRadius,
               const FilterRect& region) {
     auto rc  = resolveRect(buf, region);
@@ -509,7 +531,9 @@ void vignette(Buffer& buf, float strength, float innerRadius,
     }
 }
 
-
+// 像素化/马赛克
+// 将图像分成 blockSize × blockSize 的块，
+// 每块取均色覆盖
 void pixelate(Buffer& buf, int blockSize, const FilterRect& region) {
     if (blockSize <= 1) return;
     auto rc = resolveRect(buf, region);
@@ -546,7 +570,8 @@ void pixelate(Buffer& buf, int blockSize, const FilterRect& region) {
     }
 }
 
-
+// 扫描线|模拟效果
+// 每隔 spacing 行叠加一条暗色横条（模拟 CRT 屏幕）
 void scanlines(Buffer& buf, float strength, int spacing,
                const FilterRect& region) {
     if (spacing < 1) spacing = 1;
@@ -567,8 +592,7 @@ void scanlines(Buffer& buf, float strength, int spacing,
 
 } // namespace filter
 
-
-
+// Filter::apply 实现（将高层描述对象派发到底层函数）
 void Filter::apply(Buffer& buf) const {
     using T = Filter::Type;
     switch (type) {
