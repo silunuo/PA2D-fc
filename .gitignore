@@ -1,3 +1,4 @@
 ﻿.vs/
 out/
 CMakePresets.json
+*.vscode
