@@ -1,7 +1,23 @@
 #pragma once
 #include "buffer.h"
 #include "color.h"
-
+// ============================================================
+// filter.h  ── PA2D 滤镜模块
+//
+// 提供两个使用层级：
+//
+//   【底层】直接操作 Buffer（进阶学习与熟练开发者使用）
+//     pa2d::filter::grayscale(buffer);
+//
+//   【高层】通过 Canvas 链式调用
+//     canvas.filter(pa2d::Filter::Blur(3))
+//           .filter(pa2d::Filter::Brightness(1.2f));
+//
+// 所有原地滤镜均以矩形区域为可选参数，支持局部滤镜：
+//     pa2d::filter::blur(buffer, 3, {x, y, w, h});
+//
+// 颜色格式：ARGB（与 PA2D 的 Color 结构保持一致）
+// ============================================================
 namespace pa2d {
 
 // ── 滤镜作用区域（可选，默认整个缓冲区）─────────────────────
@@ -9,8 +25,9 @@ struct FilterRect {
     int x = 0, y = 0, w = -1, h = -1; // -1 表示延伸到边界
 };
 
+// 底层函数接口（直接操作 Buffer，原地修改）
+// 命名空间 pa2d::filter
 namespace filter {
-
 
     // 灰度化：将彩色图像转为灰度（保留 alpha）
     // 使用 ITU-R BT.601 加权公式：gray = 0.299R + 0.587G + 0.114B
@@ -43,7 +60,6 @@ namespace filter {
     // Alpha 通道调节：factor = 0 → 完全透明，= 1 → 不变
     void opacity(Buffer& buf, float factor, const FilterRect& region = {});
 
-
     // 盒式模糊（Box Blur）：速度极快，适合大半径
     // radius：模糊半径（像素），建议 1~20
     void boxBlur(Buffer& buf, int radius = 3, const FilterRect& region = {});
@@ -56,7 +72,6 @@ namespace filter {
     // cx/cy：中心坐标（-1 表示图像中心）；strength：模糊强度 0~1
     void radialBlur(Buffer& buf, float strength = 0.3f,
                     int cx = -1, int cy = -1, const FilterRect& region = {});
-
 
     // 锐化（Unsharp Mask）：减去轻度模糊版本再叠加
     // strength：锐化强度 0~3
@@ -71,19 +86,33 @@ namespace filter {
     void emboss(Buffer& buf, float angle = 135.0f, float strength = 1.0f,
                 const FilterRect& region = {});
 
+    // Bloom（泛光/发光）：让亮部产生光晕扩散效果
+    // threshold：亮度阈值（0~1），超过此值的像素参与发光
+    // radius：发光半径
+    // intensity：发光叠加强度（建议 0.3~1.5）
     void bloom(Buffer& buf, float threshold = 0.65f, int radius = 8,
                float intensity = 0.8f, const FilterRect& region = {});
 
+    // 晕影（Vignette）：边缘变暗，突出中心，常见于相机效果
+    // strength：暗角强度 0~1
+    // innerRadius：中心亮区半径比例（0~1，相对于图像短边）
     void vignette(Buffer& buf, float strength = 0.5f, float innerRadius = 0.4f,
                   const FilterRect& region = {});
 
+    // 像素化/马赛克：将图像分块取均色，产生马赛克效果
+    // blockSize：每块像素大小（建议 2~32）
     void pixelate(Buffer& buf, int blockSize = 8, const FilterRect& region = {});
 
+    // 扫描线效果：每隔一行加暗条纹，模拟 CRT 屏幕
+    // strength：条纹透明度（0~1）
+    // spacing：条纹间隔（像素）
     void scanlines(Buffer& buf, float strength = 0.3f, int spacing = 2,
                    const FilterRect& region = {});
 
 } // namespace filter
 
+// 高层封装：Filter 描述对象
+// 用于 Canvas::filter(Filter) 链式调用
 struct Filter {
     // 滤镜类型枚举（内部使用）
     enum class Type {
