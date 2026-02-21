@@ -6,27 +6,27 @@
 #include <cstring>
 
 // ============================================================
-// filter.cpp  â”€â”€ PA2D æ»¤é•œç³»ç»Ÿå®ç°
+// filter.cpp  ©¤©¤ PA2D ÂË¾µÏµÍ³ÊµÏÖ
 //
-// å®ç°ç­–ç•¥ï¼š
-//   Â· æ‰€æœ‰æ»¤é•œå…ˆè®¡ç®—å®é™…ä½œç”¨çŸ©å½¢ï¼ˆresolveRectï¼‰
-//   Â· é€åƒç´ è¿ç®—å°½é‡ç”¨æ•´æ•°ç®—æœ¯ï¼Œé¿å…æµ®ç‚¹å¾ªç¯å¼€é”€
-//   Â· å·ç§¯ç±»æ»¤é•œï¼ˆæ¨¡ç³Š/é”åŒ–ï¼‰ä½¿ç”¨å¯åˆ†ç¦»ä¸€ç»´å·ç§¯ä¼˜åŒ–
-//   Â· Alpha é€šé“é»˜è®¤ä¸å—å¤§å¤šæ•°æ»¤é•œå½±å“ï¼ˆç‰¹æ®Šæ ‡æ³¨é™¤å¤–ï¼‰
+// ÊµÏÖ²ßÂÔ£º
+//   ¡¤ ËùÓĞÂË¾µÏÈ¼ÆËãÊµ¼Ê×÷ÓÃ¾ØĞÎ£¨resolveRect£©
+//   ¡¤ ÖğÏñËØÔËËã¾¡Á¿ÓÃÕûÊıËãÊõ£¬±ÜÃâ¸¡µãÑ­»·¿ªÏú
+//   ¡¤ ¾í»ıÀàÂË¾µ£¨Ä£ºı/Èñ»¯£©Ê¹ÓÃ¿É·ÖÀëÒ»Î¬¾í»ıÓÅ»¯
+//   ¡¤ Alpha Í¨µÀÄ¬ÈÏ²»ÊÜ´ó¶àÊıÂË¾µÓ°Ïì£¨ÌØÊâ±ê×¢³ıÍâ£©
 // ============================================================
 
 namespace pa2d {
 
 namespace {
 
-struct Rect4 { int x0, y0, x1, y1; }; // [x0,x1) Ã— [y0,y1)
+struct Rect4 { int x0, y0, x1, y1; }; // [x0,x1) ¡Á [y0,y1)
 
 Rect4 resolveRect(const Buffer& buf, const FilterRect& r) {
     int x0 = r.x;
     int y0 = r.y;
     int x1 = (r.w < 0) ? buf.width  : (r.x + r.w);
     int y1 = (r.h < 0) ? buf.height : (r.y + r.h);
-    // è£å‰ªåˆ°ç¼“å†²åŒºè¾¹ç•Œ
+    // ²Ã¼ôµ½»º³åÇø±ß½ç
     x0 = std::max(0, std::min(x0, buf.width));
     y0 = std::max(0, std::min(y0, buf.height));
     x1 = std::max(x0, std::min(x1, buf.width));
@@ -34,7 +34,7 @@ Rect4 resolveRect(const Buffer& buf, const FilterRect& r) {
     return {x0, y0, x1, y1};
 }
 
-// clamp åˆ° [0, 255]
+// clamp µ½ [0, 255]
 PA2D_FORCEINLINE uint8_t clamp8(int v) {
     return (uint8_t)(v < 0 ? 0 : (v > 255 ? 255 : v));
 }
@@ -42,13 +42,13 @@ PA2D_FORCEINLINE uint8_t clamp8f(float v) {
     return (uint8_t)(v < 0.f ? 0 : (v > 255.f ? 255 : (int)v));
 }
 
-// å°† Color çš„ RGB è§£åŒ…ä¸ºæµ®ç‚¹
+// ½« Color µÄ RGB ½â°üÎª¸¡µã
 PA2D_FORCEINLINE void unpackRGBf(const Color& c,
                                   float& r, float& g, float& b) {
     r = c.r; g = c.g; b = c.b;
 }
 
-// æ„å»ºä¸€ç»´é«˜æ–¯æ ¸ï¼ˆå½’ä¸€åŒ–ï¼‰
+// ¹¹½¨Ò»Î¬¸ßË¹ºË£¨¹éÒ»»¯£©
 std::vector<float> makeGaussianKernel(float sigma) {
     int radius = (int)std::ceil(3.f * sigma);
     int size   = radius * 2 + 1;
@@ -84,12 +84,12 @@ void convolveH(const Buffer& src, Buffer& dst,
             dstRow[x].r = clamp8f(r);
             dstRow[x].g = clamp8f(g);
             dstRow[x].b = clamp8f(b);
-            dstRow[x].a = srcRow[x].a; // ä¿ç•™ alpha
+            dstRow[x].a = srcRow[x].a; // ±£Áô alpha
         }
     }
 }
 
-// å‚ç›´æ–¹å‘ä¸€ç»´å·ç§¯
+// ´¹Ö±·½ÏòÒ»Î¬¾í»ı
 void convolveV(const Buffer& src, Buffer& dst,
                const std::vector<float>& kernel,
                const Rect4& rc) {
@@ -276,11 +276,11 @@ void sepia(Buffer& buf, float intensity, const FilterRect& region) {
         Color* row = buf.getRow(y);
         for (int x = rc.x0; x < rc.x1; ++x) {
             float r = row[x].r, g = row[x].g, b = row[x].b;
-            // æ€€æ—§è‰²è°ƒçŸ©é˜µï¼ˆæ¥è‡ª CSS sepia æ ‡å‡†ï¼‰
+            // »³¾ÉÉ«µ÷¾ØÕó£¨À´×Ô CSS sepia ±ê×¼£©
             float sr = r * 0.393f + g * 0.769f + b * 0.189f;
             float sg = r * 0.349f + g * 0.686f + b * 0.168f;
             float sb = r * 0.272f + g * 0.534f + b * 0.131f;
-            // ä¸åŸè‰²æ’å€¼
+            // ÓëÔ­É«²åÖµ
             row[x].r = clamp8f(r * (1.f - intensity) + sr * intensity);
             row[x].g = clamp8f(g * (1.f - intensity) + sg * intensity);
             row[x].b = clamp8f(b * (1.f - intensity) + sb * intensity);
@@ -304,17 +304,17 @@ void boxBlur(Buffer& buf, int radius, const FilterRect& region) {
     if (radius <= 0) return;
     auto rc = resolveRect(buf, region);
 
-    // ç”¨å‡åŒ€æƒé‡çš„ä¸€ç»´æ ¸
+    // ÓÃ¾ùÔÈÈ¨ÖØµÄÒ»Î¬ºË
     int   size = radius * 2 + 1;
     float w    = 1.f / size;
     std::vector<float> kernel(size, w);
 
-    // æ°´å¹³å·ç§¯ï¼šbuf â†’ tmp
+    // Ë®Æ½¾í»ı£ºbuf ¡ú tmp
     Buffer tmp(buf.width, buf.height);
-    copyRegion(buf, tmp, rc);    // æŠŠåŒºåŸŸå¤–åƒç´ ä¹Ÿæ‹·è¿‡æ¥é¿å…è¾¹ç•Œé¢œè‰²é”™ä¹±
+    copyRegion(buf, tmp, rc);    // °ÑÇøÓòÍâÏñËØÒ²¿½¹ıÀ´±ÜÃâ±ß½çÑÕÉ«´íÂÒ
     convolveH(buf, tmp, kernel, rc);
 
-    // å‚ç›´å·ç§¯ï¼štmp â†’ buf
+    // ´¹Ö±¾í»ı£ºtmp ¡ú buf
     convolveV(tmp, buf, kernel, rc);
 }
 
@@ -337,9 +337,9 @@ void radialBlur(Buffer& buf, float strength, int cx, int cy,
     int  ocx = (cx < 0) ? buf.width  / 2 : cx;
     int  ocy = (cy < 0) ? buf.height / 2 : cy;
 
-    Buffer src = buf; // å…ˆå¤‡ä»½åŸå§‹å›¾åƒï¼ˆé¿å…è¯»å†™å†²çªï¼‰
+    Buffer src = buf; // ÏÈ±¸·İÔ­Ê¼Í¼Ïñ£¨±ÜÃâ¶ÁĞ´³åÍ»£©
 
-    const int SAMPLES = 8; // é‡‡æ ·æ•°ï¼Œè¶Šå¤šè¶Šå¹³æ»‘ï¼Œè¶Šæ…¢
+    const int SAMPLES = 8; // ²ÉÑùÊı£¬Ô½¶àÔ½Æ½»¬£¬Ô½Âı
     for (int y = rc.y0; y < rc.y1; ++y) {
         Color* dst = buf.getRow(y);
         for (int x = rc.x0; x < rc.x1; ++x) {
@@ -347,7 +347,7 @@ void radialBlur(Buffer& buf, float strength, int cx, int cy,
             float dy = (float)(y - ocy);
             float ar = 0, ag = 0, ab = 0;
             for (int s = 0; s < SAMPLES; ++s) {
-                // æ²¿å¾„å‘æ–¹å‘æŒ‰ strength ç¼©æ”¾é‡‡æ ·åæ ‡
+                // ÑØ¾¶Ïò·½Ïò°´ strength Ëõ·Å²ÉÑù×ø±ê
                 float t  = (float)s / SAMPLES * strength;
                 int   sx = std::max(rc.x0, std::min(rc.x1 - 1,
                                     (int)(ocx + dx * (1.f - t))));
@@ -367,14 +367,14 @@ void radialBlur(Buffer& buf, float strength, int cx, int cy,
 void sharpen(Buffer& buf, float strength, const FilterRect& region) {
     auto  rc     = resolveRect(buf, region);
     Buffer blurred = buf;
-    // ç”¨è½»åº¦é«˜æ–¯æ¨¡ç³Šç”Ÿæˆ"æ¨¡ç³Šç‰ˆ"
+    // ÓÃÇá¶È¸ßË¹Ä£ºıÉú³É"Ä£ºı°æ"
     gaussianBlur(blurred, 1.2f, region);
 
     for (int y = rc.y0; y < rc.y1; ++y) {
         Color*       dst = buf.getRow(y);
         const Color* src = blurred.getRow(y);
         for (int x = rc.x0; x < rc.x1; ++x) {
-            // åŸå›¾ + strength Ã— (åŸå›¾ - æ¨¡ç³Šå›¾) = é”åŒ–ç»“æœ
+            // Ô­Í¼ + strength ¡Á (Ô­Í¼ - Ä£ºıÍ¼) = Èñ»¯½á¹û
             dst[x].r = clamp8f(dst[x].r + strength * (dst[x].r - src[x].r));
             dst[x].g = clamp8f(dst[x].g + strength * (dst[x].g - src[x].g));
             dst[x].b = clamp8f(dst[x].b + strength * (dst[x].b - src[x].b));
@@ -385,9 +385,9 @@ void sharpen(Buffer& buf, float strength, const FilterRect& region) {
 
 void edgeDetect(Buffer& buf, const FilterRect& region) {
     auto   rc  = resolveRect(buf, region);
-    Buffer src = buf; // å¤‡ä»½åŸå›¾
+    Buffer src = buf; // ±¸·İÔ­Í¼
 
-    // Sobel 3Ã—3 æ ¸
+    // Sobel 3¡Á3 ºË
     // Gx:  -1  0  1        Gy: -1 -2 -1
     //      -2  0  2              0  0  0
     //      -1  0  1             +1 +2 +1
@@ -419,13 +419,13 @@ void emboss(Buffer& buf, float angle, float strength,
     auto   rc    = resolveRect(buf, region);
     Buffer src   = buf;
     float  rad   = angle * (3.14159265f / 180.f);
-    int    dx    = (int)(std::cos(rad) + 0.5f);  // å…‰æº x åç§»
-    int    dy    = (int)(-std::sin(rad) + 0.5f); // å…‰æº y åç§»ï¼ˆå±å¹• y å‘ä¸‹ï¼‰
+    int    dx    = (int)(std::cos(rad) + 0.5f);  // ¹âÔ´ x Æ«ÒÆ
+    int    dy    = (int)(-std::sin(rad) + 0.5f); // ¹âÔ´ y Æ«ÒÆ£¨ÆÁÄ» y ÏòÏÂ£©
 
     for (int y = rc.y0; y < rc.y1; ++y) {
         Color* dst = buf.getRow(y);
         for (int x = rc.x0; x < rc.x1; ++x) {
-            // å–å…‰æºæ–¹å‘ä¸Šä¸‹ä¸¤ä¸ªåƒç´ çš„äº®åº¦å·®
+            // È¡¹âÔ´·½ÏòÉÏÏÂÁ½¸öÏñËØµÄÁÁ¶È²î
             int sx1 = std::max(rc.x0, std::min(rc.x1-1, x - dx));
             int sy1 = std::max(rc.y0, std::min(rc.y1-1, y - dy));
             int sx2 = std::max(rc.x0, std::min(rc.x1-1, x + dx));
@@ -443,9 +443,9 @@ void emboss(Buffer& buf, float angle, float strength,
 void bloom(Buffer& buf, float threshold, int radius, float intensity,
            const FilterRect& region) {
     auto  rc    = resolveRect(buf, region);
-    float thresh = threshold * 255.f; // è½¬ä¸º 0~255 èŒƒå›´
+    float thresh = threshold * 255.f; // ×ªÎª 0~255 ·¶Î§
 
-    // Step 1ï¼šæå–äº®æ–‘å±‚
+    // Step 1£ºÌáÈ¡ÁÁ°ß²ã
     Buffer bright(buf.width, buf.height, Color(0, 0, 0, 0));
     for (int y = rc.y0; y < rc.y1; ++y) {
         const Color* src = buf.getRow(y);
@@ -453,7 +453,7 @@ void bloom(Buffer& buf, float threshold, int radius, float intensity,
         for (int x = rc.x0; x < rc.x1; ++x) {
             float lum = luminance(src[x]);
             if (lum >= thresh) {
-                // äº®æ–‘å¼ºåº¦æŒ‰è¶…å‡ºé˜ˆå€¼æ¯”ä¾‹ç¼©æ”¾ï¼Œå‡å°‘ç¡¬è¾¹
+                // ÁÁ°ßÇ¿¶È°´³¬³öãĞÖµ±ÈÀıËõ·Å£¬¼õÉÙÓ²±ß
                 float t = std::min(1.f, (lum - thresh) / (255.f - thresh + 1e-6f));
                 dst[x].r = clamp8f(src[x].r * t);
                 dst[x].g = clamp8f(src[x].g * t);
@@ -463,11 +463,11 @@ void bloom(Buffer& buf, float threshold, int radius, float intensity,
         }
     }
 
-    // Step 2ï¼šå¯¹äº®æ–‘å±‚è¿›è¡Œé«˜æ–¯æ¨¡ç³Š
+    // Step 2£º¶ÔÁÁ°ß²ã½øĞĞ¸ßË¹Ä£ºı
     float sigma = radius / 3.f;
     gaussianBlur(bright, sigma, region);
 
-    // Step 3ï¼šå åŠ å›åŸå›¾ï¼ˆåŠ æ³•æ··åˆï¼Œè¶…å‡º 255 æˆªæ–­ï¼‰
+    // Step 3£ºµş¼Ó»ØÔ­Í¼£¨¼Ó·¨»ìºÏ£¬³¬³ö 255 ½Ø¶Ï£©
     for (int y = rc.y0; y < rc.y1; ++y) {
         Color*       dst = buf.getRow(y);
         const Color* br  = bright.getRow(y);
@@ -485,7 +485,7 @@ void vignette(Buffer& buf, float strength, float innerRadius,
     auto rc  = resolveRect(buf, region);
     float cx = (rc.x0 + rc.x1) * 0.5f;
     float cy = (rc.y0 + rc.y1) * 0.5f;
-    // æœ€å¤§è·ç¦»ï¼ˆå–åˆ°å›¾åƒè§’è½çš„è·ç¦»ï¼Œå½’ä¸€åŒ–ç”¨ï¼‰
+    // ×î´ó¾àÀë£¨È¡µ½Í¼Ïñ½ÇÂäµÄ¾àÀë£¬¹éÒ»»¯ÓÃ£©
     float maxR = std::sqrt((float)((rc.x1-rc.x0)*(rc.x1-rc.x0) +
                                    (rc.y1-rc.y0)*(rc.y1-rc.y0))) * 0.5f;
 
@@ -494,12 +494,12 @@ void vignette(Buffer& buf, float strength, float innerRadius,
         for (int x = rc.x0; x < rc.x1; ++x) {
             float dx   = (x - cx) / maxR;
             float dy   = (y - cy) / maxR;
-            float dist = std::sqrt(dx*dx + dy*dy); // 0ï¼ˆä¸­å¿ƒï¼‰ ~ 1+ï¼ˆè§’è½ï¼‰
+            float dist = std::sqrt(dx*dx + dy*dy); // 0£¨ÖĞĞÄ£© ~ 1+£¨½ÇÂä£©
 
-            // smoothstepï¼šåœ¨ innerRadius ~ 1.0 ä¹‹é—´å¹³æ»‘è¿‡æ¸¡
+            // smoothstep£ºÔÚ innerRadius ~ 1.0 Ö®¼äÆ½»¬¹ı¶É
             float t = (dist - innerRadius) / (1.f - innerRadius);
             t = std::max(0.f, std::min(1.f, t));
-            float fade = t * t * (3.f - 2.f * t); // smoothstep æ›²çº¿
+            float fade = t * t * (3.f - 2.f * t); // smoothstep ÇúÏß
             float factor = 1.f - fade * strength;
 
             row[x].r = clamp8f(row[x].r * factor);
@@ -516,13 +516,13 @@ void pixelate(Buffer& buf, int blockSize, const FilterRect& region) {
 
     for (int by = rc.y0; by < rc.y1; by += blockSize) {
         for (int bx = rc.x0; bx < rc.x1; bx += blockSize) {
-            // è®¡ç®—å½“å‰å—çš„å®é™…èŒƒå›´
+            // ¼ÆËãµ±Ç°¿éµÄÊµ¼Ê·¶Î§
             int ex = std::min(bx + blockSize, rc.x1);
             int ey = std::min(by + blockSize, rc.y1);
             int count = (ex - bx) * (ey - by);
             if (count == 0) continue;
 
-            // è®¡ç®—å—å†…å‡è‰²
+            // ¼ÆËã¿éÄÚ¾ùÉ«
             long sr = 0, sg = 0, sb = 0, sa = 0;
             for (int y = by; y < ey; ++y) {
                 const Color* row = buf.getRow(y);
@@ -537,7 +537,7 @@ void pixelate(Buffer& buf, int blockSize, const FilterRect& region) {
             avg.b = (uint8_t)(sb / count);
             avg.a = (uint8_t)(sa / count);
 
-            // ç”¨å‡è‰²å¡«å……æ•´ä¸ªå—
+            // ÓÃ¾ùÉ«Ìî³äÕû¸ö¿é
             for (int y = by; y < ey; ++y) {
                 Color* row = buf.getRow(y);
                 for (int x = bx; x < ex; ++x) row[x] = avg;
@@ -551,10 +551,10 @@ void scanlines(Buffer& buf, float strength, int spacing,
                const FilterRect& region) {
     if (spacing < 1) spacing = 1;
     auto  rc   = resolveRect(buf, region);
-    float dark = 1.f - strength; // æš—æ¡åƒç´ çš„äº®åº¦ç³»æ•°
+    float dark = 1.f - strength; // °µÌõÏñËØµÄÁÁ¶ÈÏµÊı
 
     for (int y = rc.y0; y < rc.y1; ++y) {
-        // åªå¯¹å¶æ•°è¡Œï¼ˆæˆ–é—´éš”è¡Œï¼‰å˜æš—
+        // Ö»¶ÔÅ¼ÊıĞĞ£¨»ò¼ä¸ôĞĞ£©±ä°µ
         if ((y / spacing) % 2 == 0) continue;
         Color* row = buf.getRow(y);
         for (int x = rc.x0; x < rc.x1; ++x) {

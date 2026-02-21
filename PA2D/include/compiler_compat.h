@@ -1,12 +1,12 @@
 #pragma once
 // ============================================================
 // compiler_compat.h
-// ç¼–è¯‘å™¨å…¼å®¹å±‚ â”€â”€ ç»Ÿä¸€ MSVC ä¸Ž GCC/MinGW-w64 çš„å·®å¼‚
+// ±àÒëÆ÷¼æÈÝ²ã ©¤©¤ Í³Ò» MSVC Óë GCC/MinGW-w64 µÄ²îÒì
 //
-// åœ¨æ¯ä¸ªéœ€è¦å…¼å®¹çš„ .cpp æ–‡ä»¶é¡¶éƒ¨ #include æ­¤å¤´æ–‡ä»¶
+// ÔÚÃ¿¸öÐèÒª¼æÈÝµÄ .cpp ÎÄ¼þ¶¥²¿ #include ´ËÍ·ÎÄ¼þ
 // ============================================================
 
-// å†…è”æç¤º
+// ÄÚÁªÌáÊ¾
 #ifdef _MSC_VER
     #define PA2D_FORCEINLINE __forceinline
     #define PA2D_NOINLINE    __declspec(noinline)
@@ -15,10 +15,10 @@
     #define PA2D_NOINLINE    __attribute__((noinline))
 #endif
 
-// â”€â”€ å®‰å…¨å­—ç¬¦ä¸²å‡½æ•° â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// MSVC æä¾› wcsncpy_s / sprintf_s ç­‰"å®‰å…¨"ç‰ˆæœ¬ï¼›
-// GCC/MinGW é€šè¿‡ __STDC_WANT_LIB_EXT1__=1 å¯ä»¥æ”¯æŒéƒ¨åˆ†ï¼Œ
-// ä½†ä¸ºäº†æœ€å¤§å…¼å®¹æ€§ï¼Œè¿™é‡Œæä¾›ç»Ÿä¸€å®ã€‚
+// ©¤©¤ °²È«×Ö·û´®º¯Êý ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// MSVC Ìá¹© wcsncpy_s / sprintf_s µÈ"°²È«"°æ±¾£»
+// GCC/MinGW Í¨¹ý __STDC_WANT_LIB_EXT1__=1 ¿ÉÒÔÖ§³Ö²¿·Ö£¬
+// µ«ÎªÁË×î´ó¼æÈÝÐÔ£¬ÕâÀïÌá¹©Í³Ò»ºê¡£
 #ifndef _MSC_VER
     #include <cstring>
     #include <cwchar>
@@ -28,27 +28,27 @@
                              const wchar_t* src, size_t count) {
             if (!dst || dstSize == 0) return 1;
             size_t n = (count < dstSize - 1) ? count : dstSize - 1;
-            wcsncpy(dst, src, n);       // å¤åˆ¶æœ€å¤š n ä¸ªå®½å­—ç¬¦
-            dst[n] = L'\0';             // ç¡®ä¿ null ç»ˆæ­¢
+            wcsncpy(dst, src, n);       // ¸´ÖÆ×î¶à n ¸ö¿í×Ö·û
+            dst[n] = L'\0';             // È·±£ null ÖÕÖ¹
             return 0;
         }
     #endif
 
-    // sprintf_s â†’ snprintfï¼ˆå‚æ•°é¡ºåºç›¸åŒï¼Œè¡Œä¸ºç­‰ä»·ï¼‰
+    // sprintf_s ¡ú snprintf£¨²ÎÊýË³ÐòÏàÍ¬£¬ÐÐÎªµÈ¼Û£©
     #ifndef sprintf_s
         #define sprintf_s(buf, size, fmt, ...) \
             snprintf((buf), (size), (fmt), ##__VA_ARGS__)
     #endif
 
-    // sscanf_s â†’ sscanfï¼ˆGCC ä¸‹ sscanf_s ä¸å­˜åœ¨ï¼‰
+    // sscanf_s ¡ú sscanf£¨GCC ÏÂ sscanf_s ²»´æÔÚ£©
     #ifndef sscanf_s
         #define sscanf_s sscanf
     #endif
 #endif
 
-// â”€â”€ AVX2 / SIMD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// MSVC å’Œ GCC çš„ intrinsic å¤´æ–‡ä»¶åç›¸åŒï¼Œå‡ä¸º <immintrin.h>
-// ä½† GCC éœ€è¦é¢å¤–çš„ç¼–è¯‘é€‰é¡¹ -mavx2ï¼ˆåœ¨ CMakeLists.txt ä¸­è®¾ç½®ï¼‰
+// ©¤©¤ AVX2 / SIMD ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// MSVC ºÍ GCC µÄ intrinsic Í·ÎÄ¼þÃûÏàÍ¬£¬¾ùÎª <immintrin.h>
+// µ« GCC ÐèÒª¶îÍâµÄ±àÒëÑ¡Ïî -mavx2£¨ÔÚ CMakeLists.txt ÖÐÉèÖÃ£©
 #if defined(__AVX2__) || (defined(_MSC_VER) && defined(__AVX2__))
     #include <immintrin.h>
     #define PA2D_HAS_AVX2 1
@@ -56,8 +56,8 @@
     #define PA2D_HAS_AVX2 0
 #endif
 
-// â”€â”€ è¯Šæ–­è­¦å‘ŠæŠ‘åˆ¶ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// æŸäº› Win32 å®åœ¨ GCC ä¸‹ä¼šäº§ç”Ÿ"redefine"è­¦å‘Šï¼Œç»Ÿä¸€åœ¨æ­¤å¤„ç†
+// ©¤©¤ Õï¶Ï¾¯¸æÒÖÖÆ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// Ä³Ð© Win32 ºêÔÚ GCC ÏÂ»á²úÉú"redefine"¾¯¸æ£¬Í³Ò»ÔÚ´Ë´¦Àí
 #ifndef NOMINMAX
-    #define NOMINMAX   // é˜²æ­¢ Windows.h è¦†ç›– std::min / std::max
+    #define NOMINMAX   // ·ÀÖ¹ Windows.h ¸²¸Ç std::min / std::max
 #endif

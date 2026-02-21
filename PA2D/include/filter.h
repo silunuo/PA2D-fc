@@ -2,119 +2,119 @@
 #include "buffer.h"
 #include "color.h"
 // ============================================================
-// filter.h  â”€â”€ PA2D æ»¤é•œæ¨¡å—
+// filter.h  ©¤©¤ PA2D ÂË¾µÄ£¿é
 //
-// æä¾›ä¸¤ä¸ªä½¿ç”¨å±‚çº§ï¼š
+// Ìá¹©Á½¸öÊ¹ÓÃ²ã¼¶£º
 //
-//   ã€åº•å±‚ã€‘ç›´æ¥æ“ä½œ Bufferï¼ˆè¿›é˜¶å­¦ä¹ ä¸ç†Ÿç»ƒå¼€å‘è€…ä½¿ç”¨ï¼‰
+//   ¡¾µ×²ã¡¿Ö±½Ó²Ù×÷ Buffer£¨½ø½×Ñ§Ï°ÓëÊìÁ·¿ª·¢ÕßÊ¹ÓÃ£©
 //     pa2d::filter::grayscale(buffer);
 //
-//   ã€é«˜å±‚ã€‘é€šè¿‡ Canvas é“¾å¼è°ƒç”¨
+//   ¡¾¸ß²ã¡¿Í¨¹ı Canvas Á´Ê½µ÷ÓÃ
 //     canvas.filter(pa2d::Filter::Blur(3))
 //           .filter(pa2d::Filter::Brightness(1.2f));
 //
-// æ‰€æœ‰åŸåœ°æ»¤é•œå‡ä»¥çŸ©å½¢åŒºåŸŸä¸ºå¯é€‰å‚æ•°ï¼Œæ”¯æŒå±€éƒ¨æ»¤é•œï¼š
+// ËùÓĞÔ­µØÂË¾µ¾ùÒÔ¾ØĞÎÇøÓòÎª¿ÉÑ¡²ÎÊı£¬Ö§³Ö¾Ö²¿ÂË¾µ£º
 //     pa2d::filter::blur(buffer, 3, {x, y, w, h});
 //
-// é¢œè‰²æ ¼å¼ï¼šARGBï¼ˆä¸ PA2D çš„ Color ç»“æ„ä¿æŒä¸€è‡´ï¼‰
+// ÑÕÉ«¸ñÊ½£ºARGB£¨Óë PA2D µÄ Color ½á¹¹±£³ÖÒ»ÖÂ£©
 // ============================================================
 namespace pa2d {
 
-// â”€â”€ æ»¤é•œä½œç”¨åŒºåŸŸï¼ˆå¯é€‰ï¼Œé»˜è®¤æ•´ä¸ªç¼“å†²åŒºï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ©¤©¤ ÂË¾µ×÷ÓÃÇøÓò£¨¿ÉÑ¡£¬Ä¬ÈÏÕû¸ö»º³åÇø£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
 struct FilterRect {
-    int x = 0, y = 0, w = -1, h = -1; // -1 è¡¨ç¤ºå»¶ä¼¸åˆ°è¾¹ç•Œ
+    int x = 0, y = 0, w = -1, h = -1; // -1 ±íÊ¾ÑÓÉìµ½±ß½ç
 };
 
-// åº•å±‚å‡½æ•°æ¥å£ï¼ˆç›´æ¥æ“ä½œ Bufferï¼ŒåŸåœ°ä¿®æ”¹ï¼‰
-// å‘½åç©ºé—´ pa2d::filter
+// µ×²ãº¯Êı½Ó¿Ú£¨Ö±½Ó²Ù×÷ Buffer£¬Ô­µØĞŞ¸Ä£©
+// ÃüÃû¿Õ¼ä pa2d::filter
 namespace filter {
 
-    // ç°åº¦åŒ–ï¼šå°†å½©è‰²å›¾åƒè½¬ä¸ºç°åº¦ï¼ˆä¿ç•™ alphaï¼‰
-    // ä½¿ç”¨ ITU-R BT.601 åŠ æƒå…¬å¼ï¼šgray = 0.299R + 0.587G + 0.114B
+    // »Ò¶È»¯£º½«²ÊÉ«Í¼Ïñ×ªÎª»Ò¶È£¨±£Áô alpha£©
+    // Ê¹ÓÃ ITU-R BT.601 ¼ÓÈ¨¹«Ê½£ºgray = 0.299R + 0.587G + 0.114B
     void grayscale(Buffer& buf, const FilterRect& region = {});
 
-    // åè‰²ï¼šæ¯ä¸ªé€šé“å–è¡¥å€¼ï¼ˆ255 - å€¼ï¼‰ï¼Œä¸å½±å“ alpha
+    // ·´É«£ºÃ¿¸öÍ¨µÀÈ¡²¹Öµ£¨255 - Öµ£©£¬²»Ó°Ïì alpha
     void invert(Buffer& buf, const FilterRect& region = {});
 
-    // äº®åº¦è°ƒèŠ‚ï¼šfactor > 1 å¢äº®ï¼Œ< 1 å˜æš—ï¼Œ= 1 ä¸å˜
-    // èŒƒå›´å»ºè®®ï¼š[0.0f, 3.0f]
+    // ÁÁ¶Èµ÷½Ú£ºfactor > 1 ÔöÁÁ£¬< 1 ±ä°µ£¬= 1 ²»±ä
+    // ·¶Î§½¨Òé£º[0.0f, 3.0f]
     void brightness(Buffer& buf, float factor, const FilterRect& region = {});
 
-    // å¯¹æ¯”åº¦è°ƒèŠ‚ï¼šfactor > 1 å¢å¼ºï¼Œ< 1 å‡å¼±ï¼Œ= 1 ä¸å˜
-    // ä½¿ç”¨ä»¥ 128 ä¸ºä¸­å¿ƒçš„çº¿æ€§å˜æ¢
+    // ¶Ô±È¶Èµ÷½Ú£ºfactor > 1 ÔöÇ¿£¬< 1 ¼õÈõ£¬= 1 ²»±ä
+    // Ê¹ÓÃÒÔ 128 ÎªÖĞĞÄµÄÏßĞÔ±ä»»
     void contrast(Buffer& buf, float factor, const FilterRect& region = {});
 
-    // é¥±å’Œåº¦è°ƒèŠ‚ï¼šfactor = 0 â†’ ç°åº¦ï¼Œ= 1 â†’ ä¸å˜ï¼Œ> 1 â†’ è¿‡é¥±å’Œ
+    // ±¥ºÍ¶Èµ÷½Ú£ºfactor = 0 ¡ú »Ò¶È£¬= 1 ¡ú ²»±ä£¬> 1 ¡ú ¹ı±¥ºÍ
     void saturation(Buffer& buf, float factor, const FilterRect& region = {});
 
-    // è‰²è°ƒæ—‹è½¬ï¼šangle ä¸º HSV è‰²ç›¸æ—‹è½¬è§’åº¦ï¼ˆ0~360 åº¦ï¼‰
+    // É«µ÷Ğı×ª£ºangle Îª HSV É«ÏàĞı×ª½Ç¶È£¨0~360 ¶È£©
     void hueRotate(Buffer& buf, float angle, const FilterRect& region = {});
 
-    // é¢œè‰²å åŠ ï¼šå°†æŒ‡å®šé¢œè‰²ä¸å›¾åƒæ··åˆï¼ˆintensity = 0~1ï¼‰
+    // ÑÕÉ«µş¼Ó£º½«Ö¸¶¨ÑÕÉ«ÓëÍ¼Ïñ»ìºÏ£¨intensity = 0~1£©
     void colorTint(Buffer& buf, const Color& tint, float intensity = 0.5f,
                    const FilterRect& region = {});
 
-    // æ£•è¤è‰²æ»¤é•œï¼ˆæ€€æ—§/å¤å¤æ•ˆæœï¼‰intensity = 0~1ï¼Œ1 = å®Œå…¨æ£•è¤
+    // ×ØºÖÉ«ÂË¾µ£¨»³¾É/¸´¹ÅĞ§¹û£©intensity = 0~1£¬1 = ÍêÈ«×ØºÖ
     void sepia(Buffer& buf, float intensity = 1.0f, const FilterRect& region = {});
 
-    // Alpha é€šé“è°ƒèŠ‚ï¼šfactor = 0 â†’ å®Œå…¨é€æ˜ï¼Œ= 1 â†’ ä¸å˜
+    // Alpha Í¨µÀµ÷½Ú£ºfactor = 0 ¡ú ÍêÈ«Í¸Ã÷£¬= 1 ¡ú ²»±ä
     void opacity(Buffer& buf, float factor, const FilterRect& region = {});
 
-    // ç›’å¼æ¨¡ç³Šï¼ˆBox Blurï¼‰ï¼šé€Ÿåº¦æå¿«ï¼Œé€‚åˆå¤§åŠå¾„
-    // radiusï¼šæ¨¡ç³ŠåŠå¾„ï¼ˆåƒç´ ï¼‰ï¼Œå»ºè®® 1~20
+    // ºĞÊ½Ä£ºı£¨Box Blur£©£ºËÙ¶È¼«¿ì£¬ÊÊºÏ´ó°ë¾¶
+    // radius£ºÄ£ºı°ë¾¶£¨ÏñËØ£©£¬½¨Òé 1~20
     void boxBlur(Buffer& buf, int radius = 3, const FilterRect& region = {});
 
-    // é«˜æ–¯æ¨¡ç³Šï¼šè´¨é‡æ›´é«˜ï¼Œä½¿ç”¨å¯åˆ†ç¦»å·ç§¯ï¼ˆä¸¤æ¬¡ä¸€ç»´é«˜æ–¯ï¼‰
-    // sigmaï¼šæ ‡å‡†å·®ï¼Œè¶Šå¤§è¶Šæ¨¡ç³Šï¼›radius é€šå¸¸å– ceil(3*sigma)
+    // ¸ßË¹Ä£ºı£ºÖÊÁ¿¸ü¸ß£¬Ê¹ÓÃ¿É·ÖÀë¾í»ı£¨Á½´ÎÒ»Î¬¸ßË¹£©
+    // sigma£º±ê×¼²î£¬Ô½´óÔ½Ä£ºı£»radius Í¨³£È¡ ceil(3*sigma)
     void gaussianBlur(Buffer& buf, float sigma = 1.5f, const FilterRect& region = {});
 
-    // å¾„å‘ï¼ˆå¾„å‘ï¼‰æ¨¡ç³Šï¼šä»¥ä¸­å¿ƒç‚¹å‘å¤–ç¼©æ”¾æ¨¡ç³Šï¼Œäº§ç”Ÿ"é€Ÿåº¦æ„Ÿ"
-    // cx/cyï¼šä¸­å¿ƒåæ ‡ï¼ˆ-1 è¡¨ç¤ºå›¾åƒä¸­å¿ƒï¼‰ï¼›strengthï¼šæ¨¡ç³Šå¼ºåº¦ 0~1
+    // ¾¶Ïò£¨¾¶Ïò£©Ä£ºı£ºÒÔÖĞĞÄµãÏòÍâËõ·ÅÄ£ºı£¬²úÉú"ËÙ¶È¸Ğ"
+    // cx/cy£ºÖĞĞÄ×ø±ê£¨-1 ±íÊ¾Í¼ÏñÖĞĞÄ£©£»strength£ºÄ£ºıÇ¿¶È 0~1
     void radialBlur(Buffer& buf, float strength = 0.3f,
                     int cx = -1, int cy = -1, const FilterRect& region = {});
 
-    // é”åŒ–ï¼ˆUnsharp Maskï¼‰ï¼šå‡å»è½»åº¦æ¨¡ç³Šç‰ˆæœ¬å†å åŠ 
-    // strengthï¼šé”åŒ–å¼ºåº¦ 0~3
+    // Èñ»¯£¨Unsharp Mask£©£º¼õÈ¥Çá¶ÈÄ£ºı°æ±¾ÔÙµş¼Ó
+    // strength£ºÈñ»¯Ç¿¶È 0~3
     void sharpen(Buffer& buf, float strength = 1.0f, const FilterRect& region = {});
 
-    // è¾¹ç¼˜æ£€æµ‹ï¼ˆSobel ç®—å­ï¼‰ï¼šçªå‡ºè¾¹ç¼˜ï¼ŒèƒŒæ™¯å˜é»‘
-    // ç»“æœä¸ºç°åº¦å›¾
+    // ±ßÔµ¼ì²â£¨Sobel Ëã×Ó£©£ºÍ»³ö±ßÔµ£¬±³¾°±äºÚ
+    // ½á¹ûÎª»Ò¶ÈÍ¼
     void edgeDetect(Buffer& buf, const FilterRect& region = {});
 
-    // æµ®é›•æ•ˆæœï¼šäº§ç”Ÿç«‹ä½“å‹å°æ„Ÿ
-    // angleï¼šå…‰æºæ–¹å‘ï¼ˆåº¦ï¼‰ï¼Œstrengthï¼šå¼ºåº¦ 0~3
+    // ¸¡µñĞ§¹û£º²úÉúÁ¢ÌåÑ¹Ó¡¸Ğ
+    // angle£º¹âÔ´·½Ïò£¨¶È£©£¬strength£ºÇ¿¶È 0~3
     void emboss(Buffer& buf, float angle = 135.0f, float strength = 1.0f,
                 const FilterRect& region = {});
 
-    // Bloomï¼ˆæ³›å…‰/å‘å…‰ï¼‰ï¼šè®©äº®éƒ¨äº§ç”Ÿå…‰æ™•æ‰©æ•£æ•ˆæœ
-    // thresholdï¼šäº®åº¦é˜ˆå€¼ï¼ˆ0~1ï¼‰ï¼Œè¶…è¿‡æ­¤å€¼çš„åƒç´ å‚ä¸å‘å…‰
-    // radiusï¼šå‘å…‰åŠå¾„
-    // intensityï¼šå‘å…‰å åŠ å¼ºåº¦ï¼ˆå»ºè®® 0.3~1.5ï¼‰
+    // Bloom£¨·º¹â/·¢¹â£©£ºÈÃÁÁ²¿²úÉú¹âÔÎÀ©É¢Ğ§¹û
+    // threshold£ºÁÁ¶ÈãĞÖµ£¨0~1£©£¬³¬¹ı´ËÖµµÄÏñËØ²ÎÓë·¢¹â
+    // radius£º·¢¹â°ë¾¶
+    // intensity£º·¢¹âµş¼ÓÇ¿¶È£¨½¨Òé 0.3~1.5£©
     void bloom(Buffer& buf, float threshold = 0.65f, int radius = 8,
                float intensity = 0.8f, const FilterRect& region = {});
 
-    // æ™•å½±ï¼ˆVignetteï¼‰ï¼šè¾¹ç¼˜å˜æš—ï¼Œçªå‡ºä¸­å¿ƒï¼Œå¸¸è§äºç›¸æœºæ•ˆæœ
-    // strengthï¼šæš—è§’å¼ºåº¦ 0~1
-    // innerRadiusï¼šä¸­å¿ƒäº®åŒºåŠå¾„æ¯”ä¾‹ï¼ˆ0~1ï¼Œç›¸å¯¹äºå›¾åƒçŸ­è¾¹ï¼‰
+    // ÔÎÓ°£¨Vignette£©£º±ßÔµ±ä°µ£¬Í»³öÖĞĞÄ£¬³£¼ûÓÚÏà»úĞ§¹û
+    // strength£º°µ½ÇÇ¿¶È 0~1
+    // innerRadius£ºÖĞĞÄÁÁÇø°ë¾¶±ÈÀı£¨0~1£¬Ïà¶ÔÓÚÍ¼Ïñ¶Ì±ß£©
     void vignette(Buffer& buf, float strength = 0.5f, float innerRadius = 0.4f,
                   const FilterRect& region = {});
 
-    // åƒç´ åŒ–/é©¬èµ›å…‹ï¼šå°†å›¾åƒåˆ†å—å–å‡è‰²ï¼Œäº§ç”Ÿé©¬èµ›å…‹æ•ˆæœ
-    // blockSizeï¼šæ¯å—åƒç´ å¤§å°ï¼ˆå»ºè®® 2~32ï¼‰
+    // ÏñËØ»¯/ÂíÈü¿Ë£º½«Í¼Ïñ·Ö¿éÈ¡¾ùÉ«£¬²úÉúÂíÈü¿ËĞ§¹û
+    // blockSize£ºÃ¿¿éÏñËØ´óĞ¡£¨½¨Òé 2~32£©
     void pixelate(Buffer& buf, int blockSize = 8, const FilterRect& region = {});
 
-    // æ‰«æçº¿æ•ˆæœï¼šæ¯éš”ä¸€è¡ŒåŠ æš—æ¡çº¹ï¼Œæ¨¡æ‹Ÿ CRT å±å¹•
-    // strengthï¼šæ¡çº¹é€æ˜åº¦ï¼ˆ0~1ï¼‰
-    // spacingï¼šæ¡çº¹é—´éš”ï¼ˆåƒç´ ï¼‰
+    // É¨ÃèÏßĞ§¹û£ºÃ¿¸ôÒ»ĞĞ¼Ó°µÌõÎÆ£¬Ä£Äâ CRT ÆÁÄ»
+    // strength£ºÌõÎÆÍ¸Ã÷¶È£¨0~1£©
+    // spacing£ºÌõÎÆ¼ä¸ô£¨ÏñËØ£©
     void scanlines(Buffer& buf, float strength = 0.3f, int spacing = 2,
                    const FilterRect& region = {});
 
 } // namespace filter
 
-// é«˜å±‚å°è£…ï¼šFilter æè¿°å¯¹è±¡
-// ç”¨äº Canvas::filter(Filter) é“¾å¼è°ƒç”¨
+// ¸ß²ã·â×°£ºFilter ÃèÊö¶ÔÏó
+// ÓÃÓÚ Canvas::filter(Filter) Á´Ê½µ÷ÓÃ
 struct Filter {
-    // æ»¤é•œç±»å‹æšä¸¾ï¼ˆå†…éƒ¨ä½¿ç”¨ï¼‰
+    // ÂË¾µÀàĞÍÃ¶¾Ù£¨ÄÚ²¿Ê¹ÓÃ£©
     enum class Type {
         Grayscale, Invert,
         Brightness, Contrast, Saturation, HueRotate,
@@ -125,12 +125,12 @@ struct Filter {
     };
 
     Type     type;
-    float    f1 = 0, f2 = 0, f3 = 0;   // æµ®ç‚¹å‚æ•°ï¼ˆå«ä¹‰å› æ»¤é•œè€Œå¼‚ï¼‰
-    int      i1 = 0, i2 = 0;            // æ•´å‹å‚æ•°
-    Color    color = 0;                  // é¢œè‰²å‚æ•°ï¼ˆç”¨äº ColorTintï¼‰
-    FilterRect region;                   // ä½œç”¨åŒºåŸŸ
+    float    f1 = 0, f2 = 0, f3 = 0;   // ¸¡µã²ÎÊı£¨º¬ÒåÒòÂË¾µ¶øÒì£©
+    int      i1 = 0, i2 = 0;            // ÕûĞÍ²ÎÊı
+    Color    color = 0;                  // ÑÕÉ«²ÎÊı£¨ÓÃÓÚ ColorTint£©
+    FilterRect region;                   // ×÷ÓÃÇøÓò
 
-    // â”€â”€ å·¥å‚å‡½æ•°ï¼ˆé™æ€åˆ›å»ºæ¥å£ï¼Œé£æ ¼ä¸ PA2D ä¸€è‡´ï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ©¤©¤ ¹¤³§º¯Êı£¨¾²Ì¬´´½¨½Ó¿Ú£¬·ç¸ñÓë PA2D Ò»ÖÂ£©©¤©¤©¤©¤©¤©¤©¤©¤©¤
 
     static Filter Grayscale()                                { return {Type::Grayscale}; }
     static Filter Invert()                                   { return {Type::Invert}; }
@@ -168,10 +168,10 @@ struct Filter {
         return f;
     }
 
-    // é™åˆ¶ä½œç”¨åŒºåŸŸï¼ˆæ”¯æŒé“¾å¼ï¼šFilter::Blur(3).in({x, y, w, h})ï¼‰
+    // ÏŞÖÆ×÷ÓÃÇøÓò£¨Ö§³ÖÁ´Ê½£ºFilter::Blur(3).in({x, y, w, h})£©
     Filter& in(const FilterRect& r) { region = r; return *this; }
 
-    // å°†æ­¤ Filter æè¿°åº”ç”¨åˆ° Buffer
+    // ½«´Ë Filter ÃèÊöÓ¦ÓÃµ½ Buffer
     void apply(Buffer& buf) const;
 };
 
